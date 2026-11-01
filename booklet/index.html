@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenAI for Multimodal Content</title>
+<meta name="description" content="Session 2 lab booklet: using institutional Microsoft Copilot to create accessible images, audio, video, interactive and platform-ready science communication content.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF8F4; --paper:#FFFFFF; --ink:#1E1B2E; --muted:#55506A; --line:#E6DFD8;
+  --accent:#A3195B; --accent-soft:#FBE6F0; --accent-strong:#7E1146;
+  --code-bg:#F4EFEA; --ph:#FFE9A8; --ph-ink:#5A3F00;
+  --graphics:#1D5FA8; --audio:#7A4AB8; --video:#B5480F; --interactive:#0E7A5F; --text:#4B4B5C; --platform:#A3195B;
+  --ok:#0E6B4F; --warn:#8A5A00; --warn-bg:#FFF4D6; --info-bg:#EAF2FB;
+  --focus:#1D5FA8;
+  --radius:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16141F; --paper:#1F1C2B; --ink:#F1EEF7; --muted:#B9B3CC; --line:#36314A;
+    --accent:#F27AB6; --accent-soft:#3A1F2F; --accent-strong:#FF9ACB;
+    --code-bg:#262236; --ph:#5A4712; --ph-ink:#FFE9A8;
+    --graphics:#7DB3F0; --audio:#C2A2F2; --video:#F5A26E; --interactive:#5FD3AE; --text:#C9C7D6; --platform:#F27AB6;
+    --ok:#5FD3AE; --warn:#F3C76A; --warn-bg:#352A10; --info-bg:#1C2A3B; --focus:#7DB3F0;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16141F; --paper:#1F1C2B; --ink:#F1EEF7; --muted:#B9B3CC; --line:#36314A;
+  --accent:#F27AB6; --accent-soft:#3A1F2F; --accent-strong:#FF9ACB;
+  --code-bg:#262236; --ph:#5A4712; --ph-ink:#FFE9A8;
+  --graphics:#7DB3F0; --audio:#C2A2F2; --video:#F5A26E; --interactive:#5FD3AE; --text:#C9C7D6; --platform:#F27AB6;
+  --ok:#5FD3AE; --warn:#F3C76A; --warn-bg:#352A10; --info-bg:#1C2A3B; --focus:#7DB3F0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:1.0625rem;line-height:1.65}
+a{color:var(--accent);text-underline-offset:3px}
+a:hover{color:var(--accent-strong)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:4px}
+.skip{position:absolute;left:-9999px;top:0;background:var(--ink);color:var(--bg);padding:.6rem 1rem;z-index:100}
+.skip:focus{left:1rem;top:1rem}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;line-height:1.15;letter-spacing:-.01em}
+h2{font-size:clamp(1.6rem,3.2vw,2.1rem);margin:0 0 .4rem}
+h3{font-size:1.25rem;margin:1.6rem 0 .5rem}
+h4{font-size:1rem;margin:1.2rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+p{margin:.6rem 0}
+code{font-family:"JetBrains Mono",Consolas,monospace;font-size:.88em;background:var(--code-bg);padding:.1em .35em;border-radius:5px}
+
+/* ---------- header ---------- */
+.cover{background:#1E1B2E;color:#FBF8F4;padding:3.5rem 16px 3rem;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,#DB4AA0 0,#DB4AA0 40%,transparent 41%);opacity:.9}
+@media (max-width:640px){.cover::after{width:220px;height:220px;right:-110px;top:-110px}}
+.cover-inner{max-width:1120px;margin:0 auto;position:relative;z-index:1}
+.eyebrow{font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.8rem;color:#FFB3D7}
+.cover h1{font-size:clamp(2.2rem,6vw,3.8rem);margin:.4rem 0 .8rem;max-width:16ch;color:#fff}
+.cover .lede{max-width:60ch;font-size:1.15rem;color:#E9E5F2}
+.cover-meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.4rem}
+.pill{display:inline-flex;align-items:center;gap:.35rem;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:.25rem .8rem;font-size:.9rem;color:#fff}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:2.5rem}
+nav.toc{position:sticky;top:1rem;align-self:start;margin-top:2rem;font-size:.95rem;max-height:calc(100vh - 2rem);overflow:auto}
+nav.toc h2{font-family:inherit;font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+nav.toc ol{list-style:none;padding:0;margin:0}
+nav.toc li a{display:block;padding:.3rem .6rem;border-left:3px solid var(--line);color:var(--ink);text-decoration:none}
+nav.toc li a:hover{border-left-color:var(--accent);background:var(--accent-soft)}
+nav.toc .lvl{display:inline-block;min-width:1.7em;font-family:"JetBrains Mono",monospace;font-size:.8rem;color:var(--muted)}
+main{min-width:0;padding:2rem 0 4rem}
+section{margin-bottom:3.5rem;scroll-margin-top:1rem}
+.theme-toggle{margin-top:1rem;font:inherit;font-size:.85rem;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:.3rem .8rem;cursor:pointer}
+@media (max-width:860px){
+  .wrap{grid-template-columns:1fr;gap:0}
+  nav.toc{position:static;max-height:none;margin-top:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem}
+}
+
+/* ---------- blocks ---------- */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.4rem 1.5rem}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
+.callout{border-radius:var(--radius);padding:1rem 1.2rem;margin:1rem 0;border-left:5px solid}
+.callout.info{background:var(--info-bg);border-color:var(--graphics)}
+.callout.warn{background:var(--warn-bg);border-color:var(--warn)}
+.callout.a11y{background:var(--accent-soft);border-color:var(--accent)}
+.callout strong.label{display:block;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.2rem}
+.callout ul{margin:.3rem 0;padding-left:1.2rem}
+
+/* flow diagram */
+.flow{display:grid;grid-template-columns:1fr auto 1.6fr auto 1fr;align-items:center;gap:.8rem;margin:1.2rem 0}
+.flow .node{background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:.8rem;text-align:center;font-weight:700}
+.flow .core{border-color:var(--accent);background:var(--accent-soft)}
+.flow .mods{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.flow .mods .node{font-size:.95rem;border-left-width:6px}
+.flow .arrow{font-size:1.6rem;color:var(--muted)}
+.flow small{display:block;font-weight:400;color:var(--muted);font-size:.82rem}
+@media (max-width:640px){.flow{grid-template-columns:1fr}.flow .arrow{transform:rotate(90deg);justify-self:center}}
+
+/* level header */
+.level-head{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .8rem;margin-bottom:.6rem}
+.lvl-num{font-family:"JetBrains Mono",monospace;font-weight:600;font-size:.85rem;background:var(--ink);color:var(--bg);padding:.2rem .6rem;border-radius:6px}
+.tag{font-size:.82rem;font-weight:700;padding:.15rem .65rem;border-radius:999px;border:2px solid currentColor}
+.tag.graphics{color:var(--graphics)} .tag.audio{color:var(--audio)} .tag.video{color:var(--video)}
+.tag.interactive{color:var(--interactive)} .tag.text{color:var(--text)} .tag.platform{color:var(--platform)}
+.diff{display:inline-flex;gap:3px;align-items:center;font-size:.82rem;color:var(--muted)}
+.diff i{width:10px;height:10px;border-radius:50%;border:2px solid var(--muted);display:inline-block}
+.diff i.on{background:var(--ink);border-color:var(--ink)}
+.time{font-size:.85rem;color:var(--muted)}
+.core-badge{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ok)}
+.stretch-badge{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--warn)}
+.goal{font-size:1.1rem;color:var(--muted);max-width:65ch}
+
+/* prompt boxes */
+.prompt{position:relative;background:var(--code-bg);border:1px solid var(--line);border-radius:12px;margin:.8rem 0 1rem}
+.prompt-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .9rem;border-bottom:1px solid var(--line);font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.prompt pre{margin:0;padding:1rem;white-space:pre-wrap;word-wrap:break-word;font-family:"JetBrains Mono",Consolas,monospace;font-size:.86rem;line-height:1.6;color:var(--ink)}
+.ph{background:var(--ph);color:var(--ph-ink);border-radius:4px;padding:0 .2em}
+.copy{font:inherit;font-size:.8rem;font-weight:700;text-transform:none;letter-spacing:0;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.25rem .7rem;cursor:pointer}
+.copy:hover{border-color:var(--accent)}
+
+/* steps */
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:.6rem 0}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 .9rem 2.6rem}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.8rem;height:1.8rem;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center;font-size:.9rem}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) ol.steps>li::before{color:#1E1B2E}}
+:root[data-theme="dark"] ol.steps>li::before{color:#1E1B2E}
+
+/* checklists */
+.check{list-style:none;padding:0;margin:.4rem 0}
+.check li{margin:.35rem 0}
+.check label{display:flex;gap:.6rem;align-items:flex-start;cursor:pointer}
+.check input{width:1.15rem;height:1.15rem;margin-top:.3rem;accent-color:var(--accent);flex:none}
+
+/* tables */
+.table-wrap{overflow-x:auto;margin:.8rem 0;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:.93rem;background:var(--paper)}
+th,td{text-align:left;vertical-align:top;padding:.6rem .8rem;border-bottom:1px solid var(--line)}
+th{background:var(--code-bg);font-size:.82rem;text-transform:uppercase;letter-spacing:.05em}
+tr:last-child td{border-bottom:none}
+
+details{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:.2rem 1rem;margin:.8rem 0}
+details summary{cursor:pointer;font-weight:700;padding:.6rem 0}
+details[open] summary{border-bottom:1px solid var(--line);margin-bottom:.6rem}
+
+.path{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;margin:1rem 0}
+.path .card{padding:1rem 1.1rem}
+.path h3{margin:.2rem 0 .4rem;font-size:1.05rem}
+
+footer{border-top:1px solid var(--line);padding:2rem 16px;color:var(--muted);font-size:.9rem;text-align:center}
+
+
+.vh{position:absolute!important;left:-9999px;width:1px;height:1px;overflow:hidden}
+.setup-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem;margin:1rem 0}
+@media (max-width:620px){.setup-grid{grid-template-columns:1fr}}
+tr.emph th,tr.emph td{background:var(--accent-soft)}
+tr.emph th{border-left:5px solid var(--accent)}
+tr.emph td strong{color:var(--accent-strong)}
+.note{display:inline-block;margin-top:.35rem;font-size:.88rem;font-style:italic;color:var(--muted)}
+.checkers-title{font-weight:700;margin-bottom:.2rem}
+.checkers{margin-top:0;padding-left:1.4rem}
+ol.questions{padding-left:1.3rem}
+ol.questions>li{margin:.45rem 0}
+ol.questions ul{list-style:none;padding-left:.4rem;margin:.3rem 0}
+.task h2{margin-bottom:.2rem}
+.cost-card{border:2px solid var(--warn);background:var(--warn-bg);border-radius:var(--radius);padding:1.2rem 1.4rem;margin:1.2rem 0}
+.cost-card h3{margin:0 0 .6rem}
+.cost-card h4{margin:.2rem 0 .2rem;color:var(--ink)}
+.cost-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem}
+.cost-grid p{margin:.2rem 0;font-size:.97rem}
+.cost-foot{margin:.9rem 0 0;padding-top:.7rem;border-top:1px solid var(--warn)}
+
+
+.box{background:var(--paper);border:2px solid var(--accent);border-radius:var(--radius);padding:1.2rem 1.5rem;margin:1.2rem 0}
+.box p:last-child,.box ul:last-child{margin-bottom:0}
+main p, main li, .callout, .cost-card p{text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+
+
+details.drop{border-radius:var(--radius);padding:.9rem 1.2rem;margin:1rem 0}
+details.callout.drop{border:0;border-left:5px solid}
+details.callout.warn.drop{background:var(--warn-bg);border-color:var(--warn)}
+details.callout.info.drop{background:var(--info-bg);border-color:var(--graphics)}
+details.drop>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:.6rem;padding:0}
+details.drop>summary::-webkit-details-marker{display:none}
+details.drop>summary::before{content:"▸";font-size:1rem;color:var(--muted);transition:transform .15s}
+details.drop[open]>summary::before{transform:rotate(90deg)}
+details.drop>summary .label{margin:0}
+details.drop>summary h3{margin:0;display:inline}
+details.drop[open]>summary{border-bottom:0;margin-bottom:.6rem}
+.cost-card details.drop{background:transparent;border:0;padding:0;margin:0}
+
+
+.drop-card{border:2px solid var(--dc);background:var(--dbg);border-radius:var(--radius);padding:1.1rem 1.4rem;margin:1.2rem 0}
+.drop-card.amber{--dc:var(--warn);--dbg:var(--warn-bg)}
+.drop-card.pink{--dc:var(--accent);--dbg:var(--accent-soft)}
+.drop-card.blue{--dc:var(--graphics);--dbg:var(--info-bg)}
+.drop-card details.drop{background:transparent;border:0;padding:0;margin:0}
+.drop-card details.drop>summary h3{margin:0;font-size:1.2rem}
+.drop-card details.drop[open]>summary{margin-bottom:.8rem}
+.drop-card .cost-foot{border-top-color:var(--dc)}
+.drop-card ol.questions,.drop-card ul{margin-bottom:.4rem}
+.box{border-color:var(--line)!important}
+.legend{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.3rem;margin:1.2rem 0}
+.legend h3{margin:0 0 .5rem;font-size:1.1rem}
+.legend ul{list-style:none;padding:0;margin:0 0 .4rem}
+.legend li{display:flex;align-items:baseline;gap:.6rem;margin:.3rem 0;text-align:left}
+.legend p{margin:.4rem 0 0;font-size:.95rem;text-align:left}
+.sw{flex:none;width:1.1rem;height:1.1rem;border-radius:4px;border:2px solid;transform:translateY(.15rem)}
+.sw-blue{background:var(--info-bg);border-color:var(--graphics)}
+.sw-pink{background:var(--accent-soft);border-color:var(--accent)}
+.sw-amber{background:var(--warn-bg);border-color:var(--warn)}
+.sw-grey{background:var(--code-bg);border-color:var(--line)}
+.sw-ph{background:var(--ph);border-color:var(--ph)}
+
+@media print{
+  nav.toc,.copy,.theme-toggle,.skip{display:none!important}
+  .wrap{display:block}
+  body{background:#fff;color:#000;font-size:11pt}
+  .cover{background:#fff;color:#000;border-bottom:3px solid #A3195B;padding:1rem 0}
+  .cover::after{display:none}
+  .cover h1,.cover .lede,.pill{color:#000}
+  .pill{border-color:#999}
+  section{page-break-inside:auto}
+  .task{page-break-before:always}
+  details{border:none;padding:0}
+  details>*{display:block}
+  a{color:#000}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+
+<header class="cover">
+  <div class="cover-inner">
+    <h1>GenAI for Multimodal Content</h1>
+    <p class="lede">Turn a piece of science into images, interactive content and platform-ready posts using only institutional Microsoft Copilot, with accessibility built in from your first prompt.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="toc" aria-labelledby="toc-title">
+    <h2 id="toc-title">Contents</h2>
+    <ol>
+      <li><a href="#start"><span class="lvl">1.</span>Before you start</a></li>
+      <li><a href="#a11y"><span class="lvl">2.</span>Accessibility from the get-go</a></li>
+      <li><a href="#t1"><span class="lvl">3.</span>Task 1: Warm-up: your core message</a></li>
+      <li><a href="#t2"><span class="lvl">4.</span>Task 2: Image → text</a></li>
+      <li><a href="#t3"><span class="lvl">5.</span>Task 3: Text → image</a></li>
+      <li><a href="#t4"><span class="lvl">6.</span>Task 4: Infographic</a></li>
+      <li><a href="#t5"><span class="lvl">7.</span>Task 5: Interactive quiz</a></li>
+      <li><a href="#t6"><span class="lvl">8.</span>Task 6: Platform optimisation</a></li>
+      <li><a href="#evaluate"><span class="lvl">9.</span>Evaluate your outputs</a></li>
+      <li><a href="#log"><span class="lvl">10.</span>Your lab log</a></li>
+      <li><a href="#responsible"><span class="lvl">11.</span>Summary</a></li>
+    </ol>
+    <button class="theme-toggle" type="button" id="themeToggle">Switch light/dark</button>
+  </nav>
+
+  <main id="main">
+
+  <!-- ================= INTRO ================= -->
+  <section id="start" aria-labelledby="start-h">
+    <h2 id="start-h">Before you start</h2>
+    <p>In <a href="https://alishaaman.github.io/BIOL5439/Prompt%20Writing/">Session 1</a> you learned how to write structured prompts for text. Today the question changes: <strong>how do you turn that text into other formats, and keep it accurate and accessible as it changes form?</strong></p>
+
+    <div class="setup-grid">
+      <div class="card">
+        <h3 style="margin-top:0">Set up</h3>
+        <ol class="steps">
+          <li>Open your browser of choice, go to <a href="https://copilot.microsoft.com">copilot.microsoft.com</a> and sign in with your <strong>UofG account</strong>, as in Session 1.</li>
+          <li>Check for the <strong>shield / “protected” icon</strong>. It means enterprise data protection is on and your prompts stay inside the University's Microsoft tenant.</li>
+          <li>Open a blank Word document for your <a href="#log">lab log</a>. You will paste each final prompt into it.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">What basic Copilot can and can't do</h3>
+        <div class="table-wrap" style="margin:0">
+        <table>
+          <caption class="vh">Capabilities of the basic institutional Copilot</caption>
+          <thead><tr><th scope="col">Output</th><th scope="col">Copilot makes it?</th></tr></thead>
+          <tbody>
+            <tr><td>Text, scripts, code</td><td><strong>Yes</strong></td></tr>
+            <tr><td>Reading uploaded images/files</td><td><strong>Yes</strong></td></tr>
+            <tr><td>Images, posters, infographics, banners, image edits</td><td><strong>Yes</strong> (Create, or ask in chat)</td></tr>
+            <tr><td>Audio or video files</td><td><strong>No</strong></td></tr>
+            <tr><td>Copilot inside Word / PowerPoint</td><td><strong>Varies by licence.</strong> Everything here works in Copilot Chat in the browser; Word and PowerPoint are only used for their ordinary (non-AI) features</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p style="font-size:.9rem;color:var(--muted)">Image generation is on “standard access”, so it can be slow at busy times. Keep writing your next prompt while you wait.</p>
+      </div>
+    </div>
+
+    <h3>Recap: what you bring from Session 1</h3>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Session 1 frameworks and how they are used today</caption>
+        <thead><tr><th scope="col">Session 1 tool</th><th scope="col">How you use it today</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">P-T-C-F-A framework</th><td>Every example prompt is written as PERSONA / TASK / CONTEXT / FORMAT / ACCURACY. In multimodal prompts, FORMAT carries the details of the output: style, colour, composition, aspect ratio, word count, file type.</td></tr>
+          <tr><th scope="row">Chain prompting</th><td>Every task is a chain: generate → check → adapt. Session 1's <em>Audience Adaptation</em> pattern ended with “create a visual description to accompany text”. Today you go one step further and make the visual itself. The <em>Fact-Checking</em> pattern becomes the accuracy check at the end of each task.</td></tr>
+          <tr><th scope="row">Inverted pyramid and 5 W's</th><td>Your core message is written as an inverted-pyramid lead (most important first). It then opens your infographic, your quiz and every social post.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout a11y">
+      <strong class="label">New today: P-T-C-F-A + A</strong>
+      Add a sixth line, <strong>ACCESSIBILITY</strong>, to every prompt: alt text, contrast, colour-blind-safe palettes, keyboard use. Session 1's master template already asked you to define acronyms; this line extends that to every format.
+      <div class="table-wrap" style="margin-top:.6rem">
+        <table>
+          <caption class="vh">P-T-C-F-A plus Accessibility for multimodal prompts</caption>
+          <thead><tr><th scope="col">Line</th><th scope="col">In a multimodal prompt</th><th scope="col">Example (image)</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">PERSONA</th><td>Who makes this kind of output</td><td>Scientific illustrator</td></tr>
+            <tr><th scope="row">TASK</th><td>The output and its format</td><td>One image of plasmid transfer</td></tr>
+            <tr><th scope="row">CONTEXT</th><td>Audience, and where it will be seen</td><td>Public health leaflet, adults</td></tr>
+            <tr><th scope="row">FORMAT</th><td>Output specs</td><td>Flat vector, 16:9, white background</td></tr>
+            <tr><th scope="row">ACCURACY</th><td>What must stay true</td><td>Plausible shapes; one plasmid, one bridge</td></tr>
+            <tr><th scope="row">ACCESSIBILITY</th><td>Built in from the first draft</td><td>Blue/orange palette, no text in image</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <strong class="label">Ground rules</strong>
+      <ul>
+        <li>Use <strong>only</strong> Copilot signed in with your UofG account. Do not use other GenAI tools for this lab.</li>
+        <li>Don't upload unpublished data, personal information, or photos of people.</li>
+        <li>Only upload figures you made yourself or that are openly licensed (e.g. CC BY), and credit them. Task 2 explains why.</li>
+      </ul>
+    </div>
+
+    <h3>Running example used in this booklet</h3>
+    <p>Example prompts use one topic so you can see a single message move through every format: <strong>antibiotic resistance, specifically how bacteria share resistance genes on plasmids</strong>, for <strong>adults with no science background</strong>. Replace everything highlighted <span class="ph">[like this]</span> with your own topic and audience.</p>
+  </section>
+
+  <!-- ================= ACCESSIBILITY ================= -->
+  <section id="a11y" aria-labelledby="a11y-h">
+    <h2 id="a11y-h">Accessibility from the get-go</h2>
+    <p>Adding accessibility at the end means redoing work. Putting it <strong>in the prompt</strong> means Copilot builds it in from the first draft. Every task below has an “Accessibility built in” box. This table is the summary to keep beside you.</p>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Accessibility requirements per format</caption>
+        <thead><tr><th scope="col">Format</th><th scope="col">Put in the prompt</th><th scope="col">Check yourself afterwards</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">All</th><td>Audience reading age; plain English; define jargon on first use</td><td>Word: <em>File → Options → Proofing → Show readability statistics</em>. Then click <em>Review → Check Accessibility</em>. If you can't see the Accessibility Assistant, the document may be in an older format (“Compatibility Mode”): convert it first with <em>File → Info → Convert</em>.</td></tr>
+          <tr class="emph"><th scope="row">Images</th><td><strong>No text inside the image; colour-blind-safe palette (e.g. blue/orange, not red/green); high contrast; simple background.</strong><br><span class="note">(You can, and should, explore further image accessibility combinations. See list of links below)*</span></td><td>Alt text written for <em>this</em> image; colour isn't the only signal; works in greyscale</td></tr>
+          <tr><th scope="row">Infographics</th><td>Short real text; clear reading order; contrast at least 4.5:1 for text</td><td>Text added as real text (not baked into the picture); PowerPoint <em>Review → Check Accessibility</em></td></tr>
+          <tr><th scope="row">Interactive</th><td>Keyboard operable; visible focus; feedback in words, not only colour; screen-reader announcements</td><td>Use it with the Tab key only; zoom to 200%; Edge Read Aloud</td></tr>
+          <tr><th scope="row">Social posts</th><td>CamelCase hashtags (#AntibioticResistance); emojis few and at the end; alt text for every image</td><td>No “fancy font” Unicode text; captions on any video you post</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="checkers-title">*Useful non-AI checkers for colour accessibility:</p>
+    <ol class="checkers">
+      <li><a href="https://webaim.org/resources/contrastchecker/">WebAIM Contrast Checker</a></li>
+      <li><a href="https://www.color-blindness.com/coblis-color-blindness-simulator/">Coblis colour-blindness simulator</a></li>
+      <li><a href="https://thenode.biologists.com/color-blind-audiences/photo/">The Node: colour checking for colour-blind audiences</a></li>
+      <li><a href="https://davidmathlogic.com/colorblind/">David Math Logic: Coloring for Colorblindness</a></li>
+    </ol>
+  </section>
+
+  <!-- ================= TASK 1 ================= -->
+  <section id="t1" class="task" aria-labelledby="t1-h">
+    <h2 id="t1-h">Task 1 · Warm-up: your core message</h2>
+    <p class="goal">Before changing formats, pin down what must <em>not</em> change: the key message, the facts, and the words your audience needs explained. Copilot's answer to this prompt is your <strong>core message</strong>. You will reuse it in Tasks 3–6.</p>
+
+    <div class="prompt">
+      <div class="prompt-head"><span>Example prompt (P-T-C-F-A + Accessibility)</span><button class="copy" type="button">Copy</button></div>
+<pre>PERSONA: You are a science communicator who plans content for several formats (images, infographics, interactive content, social media).
+TASK: Turn my text below into a core message that I will reuse in every format.
+CONTEXT: My topic is <span class="ph">[how bacteria share antibiotic-resistance genes on plasmids]</span>. My audience is <span class="ph">[adults with no science background, reading age about 12]</span>.
+FORMAT: A two-column table containing:
+1. Key message as an inverted-pyramid lead: one sentence, under 20 words, most important point first.
+2. Three supporting facts.
+3. Five technical terms, each with a plain-English definition under 15 words.
+4. One everyday analogy.
+5. One common misconception and its correction.
+ACCURACY: Use ONLY facts in my text and quote the sentence each fact comes from. Do not add new facts. Flag anything uncertain.
+ACCESSIBILITY: Plain English; expand acronyms on first use.
+
+My text:
+<span class="ph">[paste a short text on your topic, e.g. from Session 1]</span></pre>
+    </div>
+
+    <div class="callout info">
+      <strong class="label">Why “use only facts in my text”?</strong>
+      Asking Copilot to quote its source sentence makes invented facts easy to spot. If a “fact” has no matching sentence, delete it.
+    </div>
+
+    <div class="box">
+      <h3 style="margin-top:0">What your core message looks like</h3>
+      <p>Your core message is <strong>Copilot's answer</strong> (the table it gives you back), <strong>not the prompt</strong> you typed. For the running example, it would look something like this:</p>
+      <div class="table-wrap">
+        <table>
+          <caption class="vh">Example core message for the running example</caption>
+          <thead><tr><th scope="col">Item</th><th scope="col">Example output</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Key message</th><td>Bacteria can share antibiotic-resistance genes with each other, which helps resistance spread quickly.</td></tr>
+            <tr><th scope="row">Fact 1</th><td>Some bacteria carry small rings of DNA, called plasmids, separate from their main DNA. <em>(followed by the sentence it was quoted from in your text)</em></td></tr>
+            <tr><th scope="row">Fact 2</th><td>Plasmids can carry genes that let bacteria survive antibiotics. <em>(source sentence)</em></td></tr>
+            <tr><th scope="row">Fact 3</th><td>A bacterium can pass a copy of a plasmid to a neighbouring bacterium through a thin bridge. <em>(source sentence)</em></td></tr>
+            <tr><th scope="row">Key terms</th><td>Plasmid: a small ring of DNA separate from the bacterium's main DNA. Gene: a stretch of DNA with instructions for one feature. <em>(and three more)</em></td></tr>
+            <tr><th scope="row">Analogy</th><td>Like handing a friend a USB stick with a useful app on it: they keep a copy and can pass it on.</td></tr>
+            <tr><th scope="row">Misconception</th><td>“People become resistant to antibiotics.” Correction: it is the bacteria that become resistant, not the person.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Copy the whole table into your lab log.</strong> This is what you will use later:</p>
+      <div class="table-wrap">
+        <table>
+          <caption class="vh">Where the core message is used in later tasks</caption>
+          <thead><tr><th scope="col">Task</th><th scope="col">What you use from your core message</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Task 2</th><td>Nothing. This task works from a figure.</td></tr>
+            <tr><th scope="row">Task 3</th><td>The <em>key message</em>, to choose what your image should show.</td></tr>
+            <tr><th scope="row">Task 4</th><td>The <em>key message</em>, two <em>facts</em> and the <em>correction</em>, shortened, as the infographic's title and three panels.</td></tr>
+            <tr><th scope="row">Tasks 5 and 6</th><td>The <strong>whole table</strong>, pasted at the end of the prompt where it says <span class="ph">[paste your core message from Task 1]</span>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h4>Check it</h4>
+    <ul class="check">
+      <li><label><input type="checkbox"> Every fact traces back to a sentence in my text (or a source I can cite).</label></li>
+      <li><label><input type="checkbox"> The analogy is accurate. It doesn't suggest something false (e.g. that bacteria “decide” to share genes).</label></li>
+      <li><label><input type="checkbox"> I copied Copilot's answer (not my prompt) into my lab log.</label></li>
+    </ul>
+  </section>
+
+  <!-- ================= TASK 2 ================= -->
+  <section id="t2" class="task" aria-labelledby="t2-h">
+    <h2 id="t2-h">Task 2 · Image → text: let Copilot read a figure</h2>
+    <p class="goal">Multimodal works in both directions. Before generating images, use Copilot to <em>interpret</em> one: explain a scientific figure for your audience and write its alt text.</p>
+
+    <div class="drop-card pink">
+      <details class="drop">
+        <summary><h3>Why alt text matters</h3></summary>
+    <p><strong>Alt text</strong> (alternative text) is a short written description attached to an image. Most readers never see it. It is read aloud by screen readers, shown when an image fails to load, and used by search engines to understand what the image shows.</p>
+    <p>Without it, a figure is a blank space for anyone who can't see it. Over two million people in the UK live with sight loss (<a href="https://help.rnib.org.uk/help/newly-diagnosed-registration/statistics">RNIB</a>). Screen readers are also used by people with other disabilities, such as cognitive, learning, hearing or motor disabilities, and about 1 in 10 screen-reader users report no disability at all (<a href="https://webaim.org/projects/screenreadersurvey10/">WebAIM Screen Reader User Survey #10, 2024</a>). In science communication the figure often <em>is</em> the finding. A missing or vague alt text can therefore mean the reader misses the main result.</p>
+    <p>It is also a legal and professional expectation, not an optional extra:</p>
+    <ul>
+      <li>The Web Content Accessibility Guidelines (WCAG) make text alternatives for non-text content their very first success criterion (<a href="https://www.w3.org/TR/WCAG22/#non-text-content">WCAG 2.2, Success Criterion 1.1.1 Non-text Content, Level A</a>).</li>
+      <li>UK public sector bodies, including universities, must meet these standards on their websites and documents (<a href="https://www.legislation.gov.uk/uksi/2018/952/contents/made">The Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018</a>).</li>
+      <li>Most journals, funders and social media platforms now ask for alt text or image descriptions.</li>
+    </ul>
+    <p>Good alt text answers one question: <strong>what does a reader need to get from this image, in this place?</strong></p>
+    <ul>
+      <li>The same figure needs different alt text in a lecture than in a press release.</li>
+      <li>A chart's alt text gives the takeaway, not the colours of the bars.</li>
+      <li>A purely decorative image gets <em>empty</em> alt text, so screen readers skip it.</li>
+      <li>A complex figure needs a short alt text <em>and</em> a longer description nearby.</li>
+    </ul>
+      </details>
+    </div>
+
+    <h3>Do it</h3>
+    <ol class="steps">
+      <li>Find a figure on your topic that you made yourself or that is openly licensed (e.g. an open-access paper under CC BY). Take a screenshot or download it.</li>
+      <li>Upload it to Copilot (paperclip / “+” icon) with the prompt below.</li>
+      <li>If the figure has been obtained from a paper, compare Copilot's reading with the figure legend in the original paper.</li>
+    </ol>
+
+    <div class="prompt">
+      <div class="prompt-head"><span>Example prompt (P-T-C-F-A + Accessibility)</span><button class="copy" type="button">Copy</button></div>
+<pre>PERSONA: You are a science communicator who writes accessible descriptions of scientific figures.
+TASK: Interpret the attached figure and write alt text for it.
+CONTEXT: The figure is from <span class="ph">[paper title, authors, year, licence]</span>. It will appear in material for <span class="ph">[adults with no science background]</span>.
+FORMAT:
+1. What the figure shows: chart type, axes, units, groups, main trend.
+2. What it means for my audience, in 3 sentences.
+3. Short alt text (about 125 characters) and a long description (3–5 sentences with the key values).
+ACCURACY: Describe only what you can see. If you can't read a label or value, say so; don't guess. Don't claim causation the figure doesn't show.
+ACCESSIBILITY: The alt text gives the figure's PURPOSE (its takeaway), not just its appearance. Don't start with "Image of".</pre>
+    </div>
+
+    <div class="callout a11y">
+      <strong class="label">Accessibility built in</strong>
+      A chart's alt text should give the takeaway (“Resistance rose from 5% to 30% between 2010 and 2020”), not “a line graph in blue”. The ~125-character figure is a common rule of thumb, not a hard limit. Data-heavy figures also need a long description.
+    </div>
+
+    <h3>Think it through: is this alt text any good?</h3>
+    <p>Don't accept Copilot's alt text because it sounds fluent. Answer these questions in your lab log.</p>
+    <ol class="questions">
+      <li><strong>Purpose:</strong> Why is this figure here, and what should the reader take away? Does the alt text deliver that takeaway, or just describe what the figure looks like?</li>
+      <li><strong>Equivalence:</strong> Close your eyes and have someone read you the alt text. Would you come away with the same understanding as a sighted reader looking at the figure?</li>
+      <li><strong>Accuracy:</strong> Is every number, label and trend in the alt text actually in the figure? Has Copilot added anything it can't see, or turned a correlation into a cause?</li>
+      <li><strong>Completeness:</strong> Is anything important missing, such as the direction of change, the groups being compared, units, or uncertainty (error bars, confidence intervals)?</li>
+      <li><strong>Context:</strong> Does it repeat what the caption or surrounding text already says? Would it change if the figure appeared in a press release instead of a lecture?</li>
+      <li><strong>Language:</strong> Is it concise, in plain English, without “image of” or “picture of”? Is colour mentioned only where colour carries meaning?</li>
+      <li><strong>Text in the image:</strong> If the figure contains words that matter (axis titles, labels), are they included?</li>
+    </ol>
+
+    <div class="drop-card amber">
+      <details class="drop">
+        <summary><h3>Not every image can go into an AI</h3></summary>
+      <p style="margin-top:0">Uploading a figure to Copilot makes a copy of it and sends it to an AI service for processing. Whether you are allowed to do that depends on who owns the image and its licence, not on whether you can find it online.</p>
+      <ol class="questions">
+        <li>Which of these could you upload, and why?
+          <ul>
+            <li>(a) a figure you made for your own BSc dissertation</li>
+            <li>(b) a figure from an open-access paper under CC BY</li>
+            <li>(c) a figure from a paywalled journal article</li>
+            <li>(d) a photo from a Google Images search</li>
+            <li>(e) a diagram scanned from a textbook</li>
+          </ul>
+        </li>
+        <li>For (b), what does the licence require you to do when you reuse the figure? How would the answer change for a CC BY-NC or CC BY-ND licence?</li>
+        <li>If your figure has already been published, do you still own it, or did you transfer copyright to the publisher?</li>
+      </ol>
+      <p><strong>Where do AI models get their knowledge?</strong> Large language and image models are trained on enormous collections of text and images, much of it gathered from the public web, alongside licensed and synthetic data. Developers rarely disclose exactly what was included, and much of that material was created by people who were never asked. With your UofG account, Copilot's enterprise data protection means your prompts and uploads are not used to train Microsoft's foundation models. That protects <em>your</em> data, but it doesn't answer whether <em>you</em> have the right to upload someone else's work.</p>
+      <p style="margin-bottom:0"><strong>Keep your answers:</strong> we will come back to who owns training data, consent and copyright in the upcoming <strong>ethics lecture</strong>.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ================= TASK 3 ================= -->
+  <section id="t3" class="task" aria-labelledby="t3-h">
+    <h2 id="t3-h">Task 3 · Text → image: one explanatory illustration</h2>
+    <p class="goal">Generate one image that makes the <em>key message</em> from your Task 1 core message easier to grasp. Then write its alt text, and check whether that alt text describes what Copilot <em>actually drew</em>.</p>
+
+    <div class="drop-card amber" role="note" aria-labelledby="cost-h">
+      <details class="drop">
+        <summary><h3 id="cost-h">Before you generate: image generation has a cost</h3></summary>
+      <div class="cost-grid">
+        <div>
+          <h4>Environmental cost</h4>
+          <p>Generating an image takes far more computing power than generating text. In one study of open-source models, image generation used on average <strong>over 60 times more energy</strong> than text generation. The least efficient model used roughly <strong>half a smartphone charge per image</strong> (<a href="https://arxiv.org/abs/2311.16863">Luccioni et al., 2024</a>). Copilot's own figures are not published, but every “just one more try” adds up. Plan your prompt before you press enter.</p>
+        </div>
+        <div>
+          <h4>Artists and copyright</h4>
+          <p>Image generators learn from millions of existing images, many made by artists, illustrators and photographers who never consented and are not paid. Whether this is lawful is still being fought out in the courts. In the UK, <a href="https://www.clearygottlieb.com/news-and-insights/publication-listing/uk-high-court-issues-landmark-ruling-in-getty-images-v-stability-ai">Getty Images v Stability AI</a> (High Court, November 2025) left many of the central questions about training unresolved. Generated images can also closely imitate a living artist's style.</p>
+        </div>
+      </div>
+      </details>
+      <p class="cost-foot">We test image generation today so you understand what it can and can't do. Both debates are covered fully in the upcoming <strong>ethics lecture</strong>.</p>
+    </div>
+
+    <div class="prompt">
+      <div class="prompt-head"><span>Example prompt (P-T-C-F-A + Accessibility)</span><button class="copy" type="button">Copy</button></div>
+<pre>PERSONA: You are a scientific illustrator who makes images for public health leaflets.
+TASK: Create one image showing <span class="ph">[one rod-shaped bacterium passing a small ring of DNA (a plasmid) to a neighbouring bacterium through a thin tube-like bridge]</span>.
+CONTEXT: For a public leaflet about <span class="ph">[antibiotic resistance]</span>, read by <span class="ph">[adults with no science background]</span>.
+FORMAT: Flat 2D vector illustration, clean simple shapes, plain white background, landscape 16:9, subject centred with empty space around it for labels I will add later.
+ACCURACY: Biologically plausible shapes and proportions; exactly one bridge and one plasmid.
+ACCESSIBILITY: Colour-blind-safe palette (<span class="ph">[blue and orange]</span> only, never red against green); strong contrast with the background; NO text, letters, labels or numbers anywhere in the image.</pre>
+    </div>
+
+    <div class="callout info">
+      <strong class="label">Why “no text in the image”?</strong>
+      Image generators often misspell words or invent fake lettering. Text baked into a picture also can't be read by a screen reader, resized, or translated. Add labels yourself as real text, in PowerPoint or Word, next to or over the image.
+    </div>
+
+    <h3>Iterate</h3>
+    <p>This is chain prompting with images. Change <strong>one</strong> element per follow-up so you can tell what made the difference, e.g. <em>“Same image, but make the plasmid larger and the bridge more visible.”</em> Record each change in your log. Keep the number of attempts low; see the cost explanation above.</p>
+
+    <h3>Then: alt text from the image itself</h3>
+    <div class="prompt">
+      <div class="prompt-head"><span>Chain prompt 2 (upload the generated image in a fresh chat)</span><button class="copy" type="button">Copy</button></div>
+<pre>TASK: Look ONLY at the attached image, not at my earlier prompt. Describe what is actually visible.
+FORMAT: Then write short alt text (about 125 characters).
+CONTEXT: It will sit next to a paragraph explaining <span class="ph">[how bacteria share resistance genes]</span>.
+ACCURACY: If anything in the image is biologically wrong or unclear, list it.</pre>
+    </div>
+    <div class="drop-card amber">
+      <details class="drop">
+        <summary><h3>Watch for this</h3></summary>
+      If you ask for alt text in the same chat where you described the image, Copilot may describe what you <em>asked for</em> rather than what it drew. Uploading the image in a fresh chat is a fairer test, and the gap between the two descriptions is worth noting in your write-up.<br><br>To examine the differences between a fresh chat and the one that you used to generate the image, prompt the AI to generate the alt text in both, and discuss the differences.
+      </details>
+    </div>
+
+    <h4>Check it</h4>
+    <ul class="check">
+      <li><label><input type="checkbox"> Scientifically plausible: the shapes, scale and process match the biology.</label></li>
+      <li><label><input type="checkbox"> No stray text or fake lettering.</label></li>
+      <li><label><input type="checkbox"> Still readable in greyscale (screenshot it and check, or use one of the colour checkers).</label></li>
+      <li><label><input type="checkbox"> Alt text matches the final image. (Use the Task 2 questions.)</label></li>
+    </ul>
+  </section>
+
+  <!-- ================= TASK 4 ================= -->
+  <section id="t4" class="task" aria-labelledby="t4-h">
+    <h2 id="t4-h">Task 4 · An accessible infographic</h2>
+    <p class="goal">Use Copilot's <strong>Create</strong> area (Poster / Infographic) to lay out the <em>key message</em>, two <em>facts</em> and the <em>correction</em> from your Task 1 core message. Then fix what image generation does badly: text. The cost explanation in Task 3 applies here too.</p>
+
+    <ol class="steps">
+      <li>In Copilot, open <strong>Create</strong> from the left-hand menu and choose <em>Infographic</em> or <em>Poster</em>. Or ask in chat. Menu names may differ slightly.</li>
+      <li>Run the prompt below with <strong>exact</strong> wording for every text element.</li>
+      <li>Use <em>Edit</em> to make one targeted change at a time.</li>
+      <li>Rebuild the version you'll actually use: generate the visual elements only, then add the text as real text in PowerPoint.</li>
+    </ol>
+
+    <div class="prompt">
+      <div class="prompt-head"><span>Example prompt (P-T-C-F-A + Accessibility)</span><button class="copy" type="button">Copy</button></div>
+<pre>PERSONA: You are an information designer for public health campaigns.
+TASK: Create a portrait infographic about <span class="ph">[how bacteria share antibiotic-resistance genes]</span>.
+CONTEXT: For <span class="ph">[adults with no science background]</span>, seen on <span class="ph">[a GP surgery noticeboard]</span>.
+FORMAT: Three panels top to bottom, numbered 1–3, one simple icon per panel. Use exactly this text and no other text:
+Title: "<span class="ph">[key message, shortened, e.g. Bacteria can share resistance]</span>"
+Panel 1: "<span class="ph">[Fact 1, shortened, e.g. Some bacteria carry genes that resist antibiotics]</span>"
+Panel 2: "<span class="ph">[Fact 3, shortened, e.g. They can pass these genes to neighbours]</span>"
+Panel 3: "<span class="ph">[the correction, e.g. It's the bacteria that become resistant, not you]</span>"
+ACCURACY: Reproduce the text exactly. No extra words, numbers or claims.
+ACCESSIBILITY: Large sans-serif text, dark text on a light background, colour-blind-safe <span class="ph">[blue/orange]</span> palette, no decorative clutter, clear top-to-bottom reading order.</pre>
+    </div>
+
+    <div class="callout a11y">
+      <strong class="label">Accessibility built in: the two-layer method</strong>
+      <ol style="margin:.3rem 0;padding-left:1.2rem">
+        <li>Ask Copilot for the <em>icons or illustration only</em>, with no text.</li>
+        <li>Open PowerPoint and create a new blank presentation.</li>
+        <li>Put them into a PowerPoint slide (set to portrait) and type the title and panel text as <strong>real text boxes</strong>.</li>
+        <li>Add alt text to each icon, or mark it decorative.</li>
+        <li>Run <em>Review → Check Accessibility</em> and fix what it flags (contrast, reading order, missing alt text).</li>
+      </ol>
+      This avoids spelling errors in the image and makes the text readable by screen readers, resizable and editable.
+    </div>
+
+    <h4>Check it</h4>
+    <ul class="check">
+      <li><label><input type="checkbox"> I compared the all-in-one Copilot version with the two-layer version and noted the differences.</label></li>
+      <li><label><input type="checkbox"> Text contrast is at least 4.5:1 (WebAIM Contrast Checker).</label></li>
+      <li><label><input type="checkbox"> Shortening the panel text didn't change the meaning of my core message.</label></li>
+    </ul>
+  </section>
+
+  <!-- ================= TASK 5 ================= -->
+  <section id="t5" class="task" aria-labelledby="t5-h">
+    <h2 id="t5-h">Task 5 · Interactive: a working “check your understanding” quiz</h2>
+    <p class="goal">Copilot can write code, so you can create interactive learning without being a programmer. You'll get a single web page with a quiz, instant feedback, and a score. Then you'll test whether it's genuinely accessible.</p>
+
+    <div class="callout info">
+      <strong class="label">How to use this prompt</strong>
+      The PERSONA to ACCESSIBILITY lines are the prompt. At the end, replace <span class="ph">[paste your core message from Task 1]</span> with the table Copilot gave you in Task 1 (from your lab log). That way Copilot works from <em>your</em> checked facts, not its own.
+    </div>
+
+    <div class="prompt">
+      <div class="prompt-head"><span>Example prompt (P-T-C-F-A + Accessibility)</span><button class="copy" type="button">Copy</button></div>
+<pre>PERSONA: You are a web developer who builds accessible e-learning activities.
+TASK: Write a single, self-contained HTML file (HTML, CSS and JavaScript in one file; no external libraries) for a 5-question multiple-choice quiz.
+CONTEXT: Topic: <span class="ph">[how bacteria share antibiotic-resistance genes]</span>. Learners: <span class="ph">[adults with no science background]</span>. They will open the file by double-clicking it in their browser.
+FORMAT: One question at a time with a "Next" button; instant feedback after each answer explaining WHY it is right or wrong (1–2 sentences); a score at the end and a "Try again" button.
+ACCURACY: Base every question only on my core message below. Include its misconception as one of the wrong options. Every correct answer must be supported by my core message.
+ACCESSIBILITY (WCAG 2.2 AA):
+- Fully usable with the keyboard only; real &lt;button&gt; elements; clearly visible focus outline.
+- Feedback in words and symbols (✓ Correct / ✗ Not quite), not colour alone.
+- Feedback announced to screen readers with an aria-live region.
+- Text contrast at least 4.5:1; base font size at least 18px; works at 200% zoom and on a phone.
+- Respect prefers-reduced-motion. Set lang="en-GB" and a meaningful page title.
+
+My core message:
+<span class="ph">[paste your core message from Task 1]</span></pre>
+    </div>
+
+    <h3>Save and run it</h3>
+    <ol class="steps">
+      <li>Copy the whole code block. If Copilot stops part-way, type <em>“continue from where you stopped”</em>.</li>
+      <li>Paste into Notepad → <em>File → Save as</em> → name it <code>quiz.html</code>, set “Save as type” to <em>All files</em> and encoding to UTF-8.</li>
+      <li>Double-click to open it in your browser.</li>
+    </ol>
+
+    <h3>Test it yourself</h3>
+    <ul class="check">
+      <li><label><input type="checkbox"> <strong>Keyboard only:</strong> unplug or ignore the mouse. Can I finish the quiz with Tab, Shift+Tab, Enter and Space? Can I always see where the focus is?</label></li>
+      <li><label><input type="checkbox"> <strong>Zoom:</strong> at Ctrl + “+” to 200%, does anything overlap or disappear?</label></li>
+      <li><label><input type="checkbox"> <strong>Listen</strong> <em>(optional, or to do at home)</em><strong>:</strong> use your browser's read-aloud feature (in Edge, Ctrl+Shift+U). Does the order make sense?</label></li>
+      <li><label><input type="checkbox"> <strong>Content:</strong> are the “correct” answers actually correct? Are the explanations accurate?</label></li>
+    </ul>
+
+    <div class="drop-card amber">
+      <details class="drop">
+        <summary><h3>Critical thinking point</h3></summary>
+      Ask Copilot: <em>“Review your code against WCAG 2.2 AA and list any failures.”</em> Then compare its answer with your own tests. Copilot will often say the code is compliant when your keyboard test shows it isn't. Record any mismatch in your log.
+      </details>
+    </div>
+
+  </section>
+
+  <!-- ================= TASK 6 ================= -->
+  <section id="t6" class="task" aria-labelledby="t6-h">
+    <h2 id="t6-h">Task 6 · One message, many platforms</h2>
+    <p class="goal">Each platform has its own length, format, audience and accessibility tools. Repurpose your core message for three platforms <em>without</em> the facts drifting as they're shortened.</p>
+
+    <h3>Step A: Platform brief first</h3>
+    <div class="prompt">
+      <div class="prompt-head"><span>Example prompt (P-T-C-F-A + Accessibility)</span><button class="copy" type="button">Copy</button></div>
+<pre>PERSONA: You are a social media manager for a science communication organisation.
+TASK: Before writing any posts, compare <span class="ph">[Instagram (carousel), LinkedIn and Bluesky]</span> for sharing my core message.
+CONTEXT: My audiences are <span class="ph">[the general public on Instagram and Bluesky; healthcare professionals on LinkedIn]</span>.
+FORMAT: A table with: typical audience, best format for this message, text length limits, how to add alt text, how hashtags are used, one misinformation risk on that platform.
+ACCURACY: Mark anything you are unsure of, or that may have changed recently, as "verify".</pre>
+    </div>
+    <p>Check the length limits and alt-text steps yourself on each platform's help pages. Limits change, and Copilot's information may be out of date.</p>
+
+    <h3>Step B: The content pack</h3>
+    <div class="callout info">
+      <strong class="label">How to use this prompt</strong>
+      The PERSONA to ACCESSIBILITY lines are the prompt. At the end, replace <span class="ph">[paste your core message from Task 1]</span> with the table Copilot gave you in Task 1 (from your lab log). That way Copilot works from <em>your</em> checked facts, not its own.
+    </div>
+
+    <div class="prompt">
+      <div class="prompt-head"><span>Example prompt (P-T-C-F-A + Accessibility)</span><button class="copy" type="button">Copy</button></div>
+<pre>PERSONA: You are a social media manager for a science communication organisation.
+TASK: Using ONLY my core message below, write:
+1. Instagram carousel: 5 slides (max 15 words each), a caption, and alt text for each slide.
+2. LinkedIn post (150–200 words) with a clear call to action.
+3. Bluesky thread: 3 posts, each within the platform's character limit.
+CONTEXT: <span class="ph">[General public on Instagram and Bluesky; healthcare professionals on LinkedIn.]</span>
+FORMAT: Inverted pyramid: every post opens with the key message.
+ACCURACY: Keep every caveat from my core message. Add no new facts or numbers.
+ACCESSIBILITY:
+- Hashtags in CamelCase (e.g. #AntibioticResistance), max 3, at the end.
+- Max 2 emojis per post, never mid-sentence, never replacing words.
+- No "fancy font" Unicode characters.
+- Plain English; define any technical term on first use.
+
+My core message:
+<span class="ph">[paste your core message from Task 1]</span></pre>
+    </div>
+
+    <h3>Step C: Drift check (a fact-checking chain, Session 1 Pattern 3)</h3>
+    <div class="prompt">
+      <div class="prompt-head"><span>Fact-checking chain</span><button class="copy" type="button">Copy</button></div>
+<pre>Prompt 1: Compare each post with my core message. List any statement that is new, exaggerated, missing a caveat, or changes the meaning. Quote the post text and the core message text side by side.
+
+Prompt 2: How would <span class="ph">[a microbiologist]</span> critique these posts? What uncertainties or limitations should be acknowledged?</pre>
+    </div>
+    <p>Then do your own check. Shortening is where hedges disappear: “can contribute to” becomes “causes”.</p>
+
+    <div class="callout a11y">
+      <strong class="label">Why these accessibility rules?</strong>
+      <ul>
+        <li>Screen readers read CamelCase hashtags as separate words; #antibioticresistance comes out as one long garbled word.</li>
+        <li>Each emoji is read aloud by name (“face with tears of joy”), so emojis mid-sentence break the flow.</li>
+        <li>“Fancy font” text is made of maths symbols that screen readers read letter by letter, or skip.</li>
+      </ul>
+    </div>
+
+    <div class="drop-card amber">
+      <details class="drop">
+        <summary><h3>Be sceptical</h3></summary>
+      If you ask Copilot for “the best time to post” or “how the algorithm works”, you'll get confident generalities that are hard to verify. Treat them as hypotheses, not facts.
+      </details>
+    </div>
+  </section>
+
+  <!-- ================= EVALUATE ================= -->
+  <section id="evaluate" aria-labelledby="eval-h">
+    <h2 id="eval-h">Evaluate your outputs</h2>
+    <p>You can use these five questions to ensure that you are generating an adequate output.</p>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Evaluation criteria</caption>
+        <thead><tr><th scope="col">Criterion</th><th scope="col">Ask yourself</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Accuracy</th><td>Is every claim traceable to a source? Did the visual introduce a scientific error (wrong shape, scale or process)?</td></tr>
+          <tr><th scope="row">Audience fit</th><td>Right reading level, tone and format for <em>this</em> audience on <em>this</em> platform?</td></tr>
+          <tr><th scope="row">Accessibility</th><td>Alt text, contrast, colour use, keyboard use: built in or missing?</td></tr>
+          <tr><th scope="row">Representation</th><td>Do generated people or places reinforce stereotypes (e.g. every scientist looks the same)?</td></tr>
+          <tr><th scope="row">Transparency</th><td>Is the AI involvement disclosed? Are sources and licences credited?</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= LOG ================= -->
+  <section id="log" aria-labelledby="log-h">
+    <h2 id="log-h">Your lab log</h2>
+    <p>The lab log is only a suggestion to help you keep track of your work: we will not check it at the end of the session. It doesn't need to be polished, and bullet points are fine.</p>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Lab log template</caption>
+        <thead><tr><th scope="col">Field</th><th scope="col">What to write</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Final prompt</th><td>Copied exactly.</td></tr>
+          <tr><th scope="row">Iterations</th><td>How many, and the <em>one</em> thing you changed each time and why.</td></tr>
+          <tr><th scope="row">Output</th><td>Final version only. Don't include every attempt.</td></tr>
+          <tr><th scope="row">Accessibility</th><td>What you built into the prompt, and what you had to fix afterwards.</td></tr>
+          <tr><th scope="row">Problems spotted</th><td>Errors, hallucinations, or a gap between what Copilot claimed and what you found.</td></tr>
+          <tr><th scope="row">Ethics notes</th><td>Your answers to the Task 2 copyright questions and your thoughts on the Task 3 cost explanation, for the ethics lecture.</td></tr>
+          <tr><th scope="row">Verdict</th><td>Would you publish this? What would a human need to do first?</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= RESPONSIBLE ================= -->
+  <section id="responsible" aria-labelledby="resp-h">
+    <h2 id="resp-h">Summary</h2>
+    <div class="grid2">
+      <div class="card"><h3 style="margin-top:0">Disclose</h3><p>Label AI-generated images and media, e.g. <em>“Illustration generated with Microsoft Copilot and edited by [name].”</em> Some platforms also have their own AI-content labels.</p></div>
+      <div class="card"><h3 style="margin-top:0">Protect</h3><p>Use your UofG login only. No personal data, no unpublished results, no photos of real people.</p></div>
+      <div class="card"><h3 style="margin-top:0">Credit</h3><p>Uploaded figures need a source and licence. Don't ask Copilot to copy a recognisable artist's style or a brand's characters.</p></div>
+      <div class="card"><h3 style="margin-top:0">Verify</h3><p>You are the author, so you are responsible for every fact. “Copilot said so” is not a source.</p></div>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  GenAI for Multimodal Content · University of Glasgow<br>
+  Previous session: <a href="https://alishaaman.github.io/BIOL5439/Prompt%20Writing/">Prompt Engineering Frameworks for Scientific Communication</a>
+</footer>
+
+<script>
+// Copy buttons: copy the prompt text (placeholders included, as plain text)
+document.querySelectorAll('.prompt').forEach(function(box){
+  var btn = box.querySelector('.copy');
+  var pre = box.querySelector('pre');
+  if(!btn || !pre) return;
+  btn.setAttribute('aria-label','Copy prompt to clipboard');
+  btn.addEventListener('click', function(){
+    var text = pre.innerText;
+    var done = function(){ btn.textContent = 'Copied ✓'; setTimeout(function(){ btn.textContent = 'Copy'; }, 1800); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(function(){ fallback(text); done(); });
+    } else { fallback(text); done(); }
+  });
+});
+function fallback(text){
+  var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly','');
+  ta.style.position='absolute'; ta.style.left='-9999px'; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta);
+}
+
+// Remember checkboxes per viewer (best-effort only)
+var boxes = document.querySelectorAll('.check input[type=checkbox]');
+var KEY = 'biol5439-s2-checks';
+var saved = {};
+try{ saved = JSON.parse(localStorage.getItem(KEY) || '{}'); }catch(e){ saved = {}; }
+boxes.forEach(function(cb, i){
+  if(saved[i]) cb.checked = true;
+  cb.addEventListener('change', function(){
+    saved[i] = cb.checked;
+    try{ localStorage.setItem(KEY, JSON.stringify(saved)); }catch(e){}
+  });
+});
+
+// Theme toggle
+var tbtn = document.getElementById('themeToggle');
+try{ var t = localStorage.getItem('biol5439-theme'); if(t) document.documentElement.setAttribute('data-theme', t); }catch(e){}
+tbtn.addEventListener('click', function(){
+  var cur = document.documentElement.getAttribute('data-theme');
+  var dark = cur ? cur === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var next = dark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try{ localStorage.setItem('biol5439-theme', next); }catch(e){}
+});
+
+// Print: open all details
+window.addEventListener('beforeprint', function(){ document.querySelectorAll('details').forEach(function(d){ d.open = true; }); });
+</script>
+</body>
+</html>
