@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenAI for Data Analysis</title>
+<meta name="description" content="Session 3 lab booklet: using institutional Microsoft Copilot as a chat partner for data analysis in Excel, and judging when GenAI helps and when it does not.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF8F4; --paper:#FFFFFF; --ink:#1E1B2E; --muted:#55506A; --line:#E6DFD8;
+  --accent:#A3195B; --accent-soft:#FBE6F0; --accent-strong:#7E1146;
+  --code-bg:#F4EFEA; --ph:#FFE9A8; --ph-ink:#5A3F00;
+  --graphics:#1D5FA8; --audio:#7A4AB8; --video:#B5480F; --interactive:#0E7A5F; --text:#4B4B5C; --platform:#A3195B;
+  --ok:#0E6B4F; --warn:#8A5A00; --warn-bg:#FFF4D6; --info-bg:#EAF2FB;
+  --focus:#1D5FA8;
+  --radius:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16141F; --paper:#1F1C2B; --ink:#F1EEF7; --muted:#B9B3CC; --line:#36314A;
+    --accent:#F27AB6; --accent-soft:#3A1F2F; --accent-strong:#FF9ACB;
+    --code-bg:#262236; --ph:#5A4712; --ph-ink:#FFE9A8;
+    --graphics:#7DB3F0; --audio:#C2A2F2; --video:#F5A26E; --interactive:#5FD3AE; --text:#C9C7D6; --platform:#F27AB6;
+    --ok:#5FD3AE; --warn:#F3C76A; --warn-bg:#352A10; --info-bg:#1C2A3B; --focus:#7DB3F0;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16141F; --paper:#1F1C2B; --ink:#F1EEF7; --muted:#B9B3CC; --line:#36314A;
+  --accent:#F27AB6; --accent-soft:#3A1F2F; --accent-strong:#FF9ACB;
+  --code-bg:#262236; --ph:#5A4712; --ph-ink:#FFE9A8;
+  --graphics:#7DB3F0; --audio:#C2A2F2; --video:#F5A26E; --interactive:#5FD3AE; --text:#C9C7D6; --platform:#F27AB6;
+  --ok:#5FD3AE; --warn:#F3C76A; --warn-bg:#352A10; --info-bg:#1C2A3B; --focus:#7DB3F0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:1.0625rem;line-height:1.65}
+a{color:var(--accent);text-underline-offset:3px}
+a:hover{color:var(--accent-strong)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:4px}
+.skip{position:absolute;left:-9999px;top:0;background:var(--ink);color:var(--bg);padding:.6rem 1rem;z-index:100}
+.skip:focus{left:1rem;top:1rem}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;line-height:1.15;letter-spacing:-.01em}
+h2{font-size:clamp(1.6rem,3.2vw,2.1rem);margin:0 0 .4rem}
+h3{font-size:1.25rem;margin:1.6rem 0 .5rem}
+h4{font-size:1rem;margin:1.2rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+p{margin:.6rem 0}
+code{font-family:"JetBrains Mono",Consolas,monospace;font-size:.88em;background:var(--code-bg);padding:.1em .35em;border-radius:5px}
+
+/* ---------- header ---------- */
+.cover{background:#1E1B2E;color:#FBF8F4;padding:3.5rem 16px 3rem;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,#DB4AA0 0,#DB4AA0 40%,transparent 41%);opacity:.9}
+@media (max-width:640px){.cover::after{width:220px;height:220px;right:-110px;top:-110px}}
+.cover-inner{max-width:1120px;margin:0 auto;position:relative;z-index:1}
+.eyebrow{font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.8rem;color:#FFB3D7}
+.cover h1{font-size:clamp(2.2rem,6vw,3.8rem);margin:.4rem 0 .8rem;max-width:16ch;color:#fff}
+.cover .lede{max-width:60ch;font-size:1.15rem;color:#E9E5F2}
+.cover-meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.4rem}
+.pill{display:inline-flex;align-items:center;gap:.35rem;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:.25rem .8rem;font-size:.9rem;color:#fff}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:2.5rem}
+nav.toc{position:sticky;top:1rem;align-self:start;margin-top:2rem;font-size:.95rem;max-height:calc(100vh - 2rem);overflow:auto}
+nav.toc h2{font-family:inherit;font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+nav.toc ol{list-style:none;padding:0;margin:0}
+nav.toc li a{display:block;padding:.3rem .6rem;border-left:3px solid var(--line);color:var(--ink);text-decoration:none}
+nav.toc li a:hover{border-left-color:var(--accent);background:var(--accent-soft)}
+nav.toc .lvl{display:inline-block;min-width:1.7em;font-family:"JetBrains Mono",monospace;font-size:.8rem;color:var(--muted)}
+main{min-width:0;padding:2rem 0 4rem}
+section{margin-bottom:3.5rem;scroll-margin-top:1rem}
+.theme-toggle{margin-top:1rem;font:inherit;font-size:.85rem;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:.3rem .8rem;cursor:pointer}
+@media (max-width:860px){
+  .wrap{grid-template-columns:1fr;gap:0}
+  nav.toc{position:static;max-height:none;margin-top:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem}
+}
+
+/* ---------- blocks ---------- */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.4rem 1.5rem}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
+.callout{border-radius:var(--radius);padding:1rem 1.2rem;margin:1rem 0;border-left:5px solid}
+.callout.info{background:var(--info-bg);border-color:var(--graphics)}
+.callout.warn{background:var(--warn-bg);border-color:var(--warn)}
+.callout.a11y{background:var(--accent-soft);border-color:var(--accent)}
+.callout strong.label{display:block;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.2rem}
+.callout ul{margin:.3rem 0;padding-left:1.2rem}
+
+/* flow diagram */
+.flow{display:grid;grid-template-columns:1fr auto 1.6fr auto 1fr;align-items:center;gap:.8rem;margin:1.2rem 0}
+.flow .node{background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:.8rem;text-align:center;font-weight:700}
+.flow .core{border-color:var(--accent);background:var(--accent-soft)}
+.flow .mods{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.flow .mods .node{font-size:.95rem;border-left-width:6px}
+.flow .arrow{font-size:1.6rem;color:var(--muted)}
+.flow small{display:block;font-weight:400;color:var(--muted);font-size:.82rem}
+@media (max-width:640px){.flow{grid-template-columns:1fr}.flow .arrow{transform:rotate(90deg);justify-self:center}}
+
+/* level header */
+.level-head{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .8rem;margin-bottom:.6rem}
+.lvl-num{font-family:"JetBrains Mono",monospace;font-weight:600;font-size:.85rem;background:var(--ink);color:var(--bg);padding:.2rem .6rem;border-radius:6px}
+.tag{font-size:.82rem;font-weight:700;padding:.15rem .65rem;border-radius:999px;border:2px solid currentColor}
+.tag.graphics{color:var(--graphics)} .tag.audio{color:var(--audio)} .tag.video{color:var(--video)}
+.tag.interactive{color:var(--interactive)} .tag.text{color:var(--text)} .tag.platform{color:var(--platform)}
+.diff{display:inline-flex;gap:3px;align-items:center;font-size:.82rem;color:var(--muted)}
+.diff i{width:10px;height:10px;border-radius:50%;border:2px solid var(--muted);display:inline-block}
+.diff i.on{background:var(--ink);border-color:var(--ink)}
+.time{font-size:.85rem;color:var(--muted)}
+.core-badge{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ok)}
+.stretch-badge{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--warn)}
+.goal{font-size:1.1rem;color:var(--muted);max-width:65ch}
+
+/* prompt boxes */
+.prompt{position:relative;background:var(--code-bg);border:1px solid var(--line);border-radius:12px;margin:.8rem 0 1rem}
+.prompt-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .9rem;border-bottom:1px solid var(--line);font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.prompt pre{margin:0;padding:1rem;white-space:pre-wrap;word-wrap:break-word;font-family:"JetBrains Mono",Consolas,monospace;font-size:.86rem;line-height:1.6;color:var(--ink)}
+.ph{background:var(--ph);color:var(--ph-ink);border-radius:4px;padding:0 .2em}
+.copy{font:inherit;font-size:.8rem;font-weight:700;text-transform:none;letter-spacing:0;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.25rem .7rem;cursor:pointer}
+.copy:hover{border-color:var(--accent)}
+
+/* steps */
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:.6rem 0}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 .9rem 2.6rem}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.8rem;height:1.8rem;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center;font-size:.9rem}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) ol.steps>li::before{color:#1E1B2E}}
+:root[data-theme="dark"] ol.steps>li::before{color:#1E1B2E}
+
+/* checklists */
+.check{list-style:none;padding:0;margin:.4rem 0}
+.check li{margin:.35rem 0}
+.check label{display:flex;gap:.6rem;align-items:flex-start;cursor:pointer}
+.check input{width:1.15rem;height:1.15rem;margin-top:.3rem;accent-color:var(--accent);flex:none}
+
+/* tables */
+.table-wrap{overflow-x:auto;margin:.8rem 0;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:.93rem;background:var(--paper)}
+th,td{text-align:left;vertical-align:top;padding:.6rem .8rem;border-bottom:1px solid var(--line)}
+th{background:var(--code-bg);font-size:.82rem;text-transform:uppercase;letter-spacing:.05em}
+tr:last-child td{border-bottom:none}
+
+details{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:.2rem 1rem;margin:.8rem 0}
+details summary{cursor:pointer;font-weight:700;padding:.6rem 0}
+details[open] summary{border-bottom:1px solid var(--line);margin-bottom:.6rem}
+
+.path{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;margin:1rem 0}
+.path .card{padding:1rem 1.1rem}
+.path h3{margin:.2rem 0 .4rem;font-size:1.05rem}
+
+footer{border-top:1px solid var(--line);padding:2rem 16px;color:var(--muted);font-size:.9rem;text-align:center}
+
+
+.vh{position:absolute!important;left:-9999px;width:1px;height:1px;overflow:hidden}
+.setup-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem;margin:1rem 0}
+@media (max-width:620px){.setup-grid{grid-template-columns:1fr}}
+tr.emph th,tr.emph td{background:var(--accent-soft)}
+tr.emph th{border-left:5px solid var(--accent)}
+tr.emph td strong{color:var(--accent-strong)}
+.note{display:inline-block;margin-top:.35rem;font-size:.88rem;font-style:italic;color:var(--muted)}
+.checkers-title{font-weight:700;margin-bottom:.2rem}
+.checkers{margin-top:0;padding-left:1.4rem}
+ol.questions{padding-left:1.3rem}
+ol.questions>li{margin:.45rem 0}
+ol.questions ul{list-style:none;padding-left:.4rem;margin:.3rem 0}
+.task h2{margin-bottom:.2rem}
+.cost-card{border:2px solid var(--warn);background:var(--warn-bg);border-radius:var(--radius);padding:1.2rem 1.4rem;margin:1.2rem 0}
+.cost-card h3{margin:0 0 .6rem}
+.cost-card h4{margin:.2rem 0 .2rem;color:var(--ink)}
+.cost-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem}
+.cost-grid p{margin:.2rem 0;font-size:.97rem}
+.cost-foot{margin:.9rem 0 0;padding-top:.7rem;border-top:1px solid var(--warn)}
+
+
+.box{background:var(--paper);border:2px solid var(--accent);border-radius:var(--radius);padding:1.2rem 1.5rem;margin:1.2rem 0}
+.box p:last-child,.box ul:last-child{margin-bottom:0}
+main p, main li, .callout, .cost-card p{text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+
+
+details.drop{border-radius:var(--radius);padding:.9rem 1.2rem;margin:1rem 0}
+details.callout.drop{border:0;border-left:5px solid}
+details.callout.warn.drop{background:var(--warn-bg);border-color:var(--warn)}
+details.callout.info.drop{background:var(--info-bg);border-color:var(--graphics)}
+details.drop>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:.6rem;padding:0}
+details.drop>summary::-webkit-details-marker{display:none}
+details.drop>summary::before{content:"▸";font-size:1rem;color:var(--muted);transition:transform .15s}
+details.drop[open]>summary::before{transform:rotate(90deg)}
+details.drop>summary .label{margin:0}
+details.drop>summary h3{margin:0;display:inline}
+details.drop[open]>summary{border-bottom:0;margin-bottom:.6rem}
+.cost-card details.drop{background:transparent;border:0;padding:0;margin:0}
+
+
+.drop-card{border:2px solid var(--dc);background:var(--dbg);border-radius:var(--radius);padding:1.1rem 1.4rem;margin:1.2rem 0}
+.drop-card.amber{--dc:var(--warn);--dbg:var(--warn-bg)}
+.drop-card.pink{--dc:var(--accent);--dbg:var(--accent-soft)}
+.drop-card.blue{--dc:var(--graphics);--dbg:var(--info-bg)}
+.drop-card details.drop{background:transparent;border:0;padding:0;margin:0}
+.drop-card details.drop>summary h3{margin:0;font-size:1.2rem}
+.drop-card details.drop[open]>summary{margin-bottom:.8rem}
+.drop-card .cost-foot{border-top-color:var(--dc)}
+.drop-card ol.questions,.drop-card ul{margin-bottom:.4rem}
+.box{border-color:var(--line)!important}
+.legend{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.3rem;margin:1.2rem 0}
+.legend h3{margin:0 0 .5rem;font-size:1.1rem}
+.legend ul{list-style:none;padding:0;margin:0 0 .4rem}
+.legend li{display:flex;align-items:baseline;gap:.6rem;margin:.3rem 0;text-align:left}
+.legend p{margin:.4rem 0 0;font-size:.95rem;text-align:left}
+.sw{flex:none;width:1.1rem;height:1.1rem;border-radius:4px;border:2px solid;transform:translateY(.15rem)}
+.sw-blue{background:var(--info-bg);border-color:var(--graphics)}
+.sw-pink{background:var(--accent-soft);border-color:var(--accent)}
+.sw-amber{background:var(--warn-bg);border-color:var(--warn)}
+.sw-grey{background:var(--code-bg);border-color:var(--line)}
+.sw-ph{background:var(--ph);border-color:var(--ph)}
+
+@media print{
+  nav.toc,.copy,.theme-toggle,.skip{display:none!important}
+  .wrap{display:block}
+  body{background:#fff;color:#000;font-size:11pt}
+  .cover{background:#fff;color:#000;border-bottom:3px solid #A3195B;padding:1rem 0}
+  .cover::after{display:none}
+  .cover h1,.cover .lede,.pill{color:#000}
+  .pill{border-color:#999}
+  section{page-break-inside:auto}
+  .task{page-break-before:always}
+  details{border:none;padding:0}
+  details>*{display:block}
+  a{color:#000}
+}
+.setup-grid .card li{text-align:left;hyphens:manual;-webkit-hyphens:manual}
+.hl{background:var(--info-bg);box-shadow:inset 0 -2px 0 var(--graphics);padding:0 .15em;border-radius:3px;font-weight:700}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+
+<header class="cover">
+  <div class="cover-inner">
+    <h1>GenAI for Data Analysis</h1>
+    <p class="lede">Analyse a real dataset in Excel yourself, and find out where Copilot speeds you up, where it slows you down, and where it gets things wrong.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="toc" aria-labelledby="toc-title">
+    <h2 id="toc-title">Contents</h2>
+    <ol>
+      <li><a href="#start"><span class="lvl">1.</span>Before you start</a></li>
+      <li><a href="#a11y"><span class="lvl">2.</span>Accessibility</a></li>
+      <li><a href="#t1"><span class="lvl">3.</span>Task 1: Faster by hand?</a></li>
+      <li><a href="#t2"><span class="lvl">4.</span>Task 2: Describe the dataset</a></li>
+      <li><a href="#t3"><span class="lvl">5.</span>Task 3: Formula assistant</a></li>
+      <li><a href="#t4"><span class="lvl">6.</span>Task 4: A two-axis chart</a></li>
+      <li><a href="#t5"><span class="lvl">7.</span>Task 5: Interpret the results</a></li>
+      <li><a href="#evaluate"><span class="lvl">8.</span>Evaluate your outputs</a></li>
+      <li><a href="#log"><span class="lvl">9.</span>Your lab log</a></li>
+      <li><a href="#responsible"><span class="lvl">10.</span>Summary</a></li>
+    </ol>
+    <button class="theme-toggle" type="button" id="themeToggle">Switch light/dark</button>
+  </nav>
+
+  <main id="main">
+
+  <!-- ================= INTRO ================= -->
+  <section id="start" aria-labelledby="start-h">
+    <h2 id="start-h">Before you start</h2>
+    <p>In Session 2 you turned a scientific message into images, quizzes and posts, with accessibility built in. Today we look at a different question: <strong>when does GenAI actually help with data analysis, and when is it faster and safer to do the work yourself?</strong></p>
+
+    <div class="callout info">
+      <strong class="label">How today works</strong>
+      You will do every analysis step in <strong>Excel</strong>. Copilot is only a chat partner that explains, suggests and checks: <strong>it is your assistant, not your data analyst.</strong>
+    </div>
+
+    <div class="setup-grid">
+      <div class="card">
+        <h3 style="margin-top:0">Set up</h3>
+        <ol class="steps">
+          <li>Download <code>bee_colonies.xlsx</code> from Moodle and open it in Excel. In case you cannot use <code>.xlsx</code> due to compatibility issues, you can also work with the two <code>.csv</code> files.</li>
+          <li>In your browser, go to <a href="https://copilot.microsoft.com">copilot.microsoft.com</a> and sign in with your <strong>UofG account</strong>.</li>
+          <li>If a Copilot button or side pane appears <em>inside</em> Excel, <strong>keep it closed today</strong>. It is designed to work with the data in the open workbook (<a href="https://support.microsoft.com/en-US/Microsoft-365-Copilot/how-copilot-chat-works-in-Microsoft-365-apps">Microsoft</a>), and today the analysis is yours.</li>
+          <li>Open a blank Word document for your <a href="#log">lab log</a>.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">What basic Copilot can and can't do</h3>
+        <div class="table-wrap" style="margin:0">
+        <table>
+          <caption class="vh">Capabilities of the basic institutional Copilot for data analysis</caption>
+          <thead><tr><th scope="col">Job</th><th scope="col">Copilot does it?</th></tr></thead>
+          <tbody>
+            <tr><td>Write and explain Excel formulas</td><td><strong>Yes</strong>, in the chat. You test them in Excel</td></tr>
+            <tr><td>Read an uploaded <code>.xlsx</code> or <code>.csv</code> file</td><td><strong>Yes</strong> (<a href="https://support.microsoft.com/en-us/Microsoft-Copilot/file-upload-in-microsoft-copilot">file types</a>). Used once today, in Task 2</td></tr>
+            <tr><td>Calculate statistics</td><td><strong>Yes</strong>, but you check the result against Excel</td></tr>
+            <tr><td>Make charts</td><td><strong>Yes</strong>, but <strong>not today</strong>: you build every chart yourself</td></tr>
+            <tr><td>Edit your spreadsheet directly, or Agent Mode in Excel</td><td><strong>No.</strong> Needs a paid Microsoft 365 Copilot licence (<a href="https://support.microsoft.com/en-US/Microsoft-365-Copilot/how-copilot-chat-works-in-Microsoft-365-apps">Microsoft</a>)</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <h3>Recap: what you bring from Sessions 1 and 2</h3>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Frameworks from earlier sessions and how they are used today</caption>
+        <thead><tr><th scope="col">Earlier tool</th><th scope="col">How you use it today</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">P-T-C-F-A + Accessibility</th><td>Every example prompt uses PERSONA / TASK / CONTEXT / FORMAT / ACCURACY / ACCESSIBILITY. <span class="hl">In data prompts, CONTEXT carries your sheet and column names, and ACCURACY says what Copilot must not invent.</span></td></tr>
+          <tr><th scope="row">Chain prompting and fact-checking</th><td>Every formula goes through a chain: <span class="hl">ask → explain it back in a fresh chat → test it in Excel.</span></td></tr>
+          <tr><th scope="row">Alt text (Session 2, Task 2)</th><td>You have already worked with alt-text generation in Session 2. This time you will write alt text for a chart you built yourself, in Task 4.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warn">
+      <strong class="label">Ground rules</strong>
+      <ul>
+        <li>Use <strong>only</strong> Copilot signed in with your UofG account.</li>
+        <li><strong>Do the analysis in Excel.</strong> Copilot may explain, suggest and check, but every number you report comes from your spreadsheet.</li>
+        <li><strong>No AI-generated charts.</strong> You build them yourself.</li>
+        <li>Today's data are public and contain no personal information, so pasting or uploading them is fine. <strong>Never do this with personal or unpublished data.</strong> Task 2 explains why.</li>
+      </ul>
+    </div>
+
+    <h3>Running example used in this booklet</h3>
+    <p>You will work with honey bee colony loss in the United States, using data from the USDA's Quarterly Colony Loss Survey (<a href="https://data.nass.usda.gov/Publications/Methodology_and_Data_Quality/Honey_Bee_Colonies/08_2025/hblqm25.pdf">USDA NASS</a>), as compiled by <a href="https://rfordatascience.github.io/tidytuesday/data/2022/2022-01-11/readme.html">TidyTuesday</a> (CC0 licence). The file has been trimmed to a smaller set of places, from January 2015 to June 2021:</p>
+    <ul>
+      <li><strong>colony</strong> sheet: colonies at the start of each quarter, colonies lost, percent lost and colonies added.</li>
+      <li><strong>varroa</strong> sheet: percent of colonies affected by varroa mites, a parasite of honey bees, in each quarter.</li>
+      <li><strong>about</strong> sheet: source and column definitions.</li>
+    </ul>
+    <p>Replace everything highlighted <span class="ph">[like this]</span> with your own choices, for example the state you analyse.</p>
+  </section>
+
+  <!-- ================= ACCESSIBILITY ================= -->
+  <section id="a11y" aria-labelledby="a11y-h">
+    <h2 id="a11y-h">Accessibility</h2>
+    <p>Accessibility in data work means two things: Copilot's explanations must be understandable, and the tables and charts you make must work for everyone. Put it <strong>in the prompt</strong> and in your own Excel habits from the start.</p>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Accessibility requirements per format</caption>
+        <thead><tr><th scope="col">Format</th><th scope="col">Put in the prompt</th><th scope="col">Check yourself afterwards</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Copilot's explanations</th><td>Plain English; define statistical terms on first use; explain each function in words</td><td>Could you explain the answer to a classmate without Copilot?</td></tr>
+          <tr><th scope="row">Spreadsheets</th><td>Clear column headers; no merged cells; meaning never shown by colour alone</td><td>Excel: <em>Review → Check Accessibility</em>. Fix what it flags.</td></tr>
+          <tr class="emph"><th scope="row">Charts</th><td><strong>Colour-blind-safe palette (e.g. blue/orange); direct labels instead of a legend; axis titles with units; no 3D or shadows.</strong><br><span class="note">(See the checklist and checkers below)*</span></td><td>Lines and markers contrast at least 3:1 with the background (<a href="https://www.w3.org/WAI/WCAG22/Techniques/general/G207">W3C</a>); works in greyscale; alt text plus a short text description or data table next to the chart (<a href="https://analysisfunction.civilservice.gov.uk/policy-store/charts-a-checklist">Analysis Function</a>)</td></tr>
+          <tr><th scope="row">Written conclusions</th><td>Audience reading age; numbers in words and figures where helpful</td><td>Word: <em>Review → Check Accessibility</em> and readability statistics</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="checkers-title">*Useful non-AI checkers and guidance for accessible charts:</p>
+    <ol class="checkers">
+      <li><a href="https://analysisfunction.civilservice.gov.uk/policy-store/charts-a-checklist">Analysis Function: Accessible charts, a checklist of the basics</a></li>
+      <li><a href="https://webaim.org/resources/contrastchecker/">WebAIM Contrast Checker</a></li>
+      <li><a href="https://www.color-blindness.com/coblis-color-blindness-simulator/">Coblis colour-blindness simulator</a></li>
+      <li><a href="https://support.microsoft.com/en-us/office/add-alternative-text-to-a-shape-picture-chart-smartart-graphic-or-other-object-44989b2a-903c-4d9a-b742-6a75b451c669">Microsoft: add alt text to a chart (Windows and Mac)</a></li>
+    </ol>
+  </section>
+
+  <!-- ================= TASK 1 ================= -->
+  <section id="t1" class="task" aria-labelledby="t1-h">
+    <h2 id="t1-h">Task 1 · Faster by hand?</h2>
+    <p class="goal">You can run data analysis by yourselves. Test whether Copilot saves you any time, and where it could help instead. You are expected to time yourself: simply note the time when you start and finish the calculations, then do the same while using Copilot.</p>
+
+    <ol class="steps">
+      <li>In the <strong>colony</strong> sheet, filter <code>state</code> to <span class="ph">[California]</span>.</li>
+      <li>Calculate the mean, median and standard deviation of <code>colony_lost_pct</code>.</li>
+      <li>Copy the same column of values into the prompt below and run it. Check Copilot's answer.</li>
+      <li>Compare the efficiency between your computations and Copilot's assisted computations.</li>
+    </ol>
+
+    <div class="prompt">
+      <div class="prompt-head"><span>Example prompt (P-T-C-F-A + Accessibility)</span><button class="copy" type="button">Copy</button></div>
+<pre>PERSONA: You are a statistician helping a science student.
+TASK: Calculate the mean, median and sample standard deviation of the values below.
+CONTEXT: Percent of honey bee colonies lost per quarter in <span class="ph">[California]</span>, 2015–2021. <span class="ph">[One quarter has no value.]</span>
+FORMAT: A three-row table with values to 2 decimal places, then one sentence on how you calculated the standard deviation.
+ACCURACY: Use all the listed values and no others. Tell me how many values you used. Show your working.
+ACCESSIBILITY: Plain English; name each statistic in words, not only as a symbol.
+
+Values:
+<span class="ph">[paste the colony_lost_pct values for your state]</span></pre>
+    </div>
+
+    <h4>Think it through</h4>
+    <ol class="questions">
+      <li>What did you use to calculate these in Excel (or OpenOffice)? Did you use <code>=AVERAGE</code>, <code>=MEDIAN</code> and <code>=STDEV.S</code>? If you chose a different function for the standard deviation, does it give the sample or the population value, and which one fits these data?</li>
+      <li>Do the two sets of answers match? If not, which is right, and why? (Look at how many values each used, and how the blank was treated.)</li>
+      <li>Which was faster, once you count the time spent checking Copilot?</li>
+      <li>Sort these jobs into “Excel does it”, “I do it” and “Copilot could help”, and note why:
+        <ul>
+          <li>(a) the mean of a column</li>
+          <li>(b) a formula with three conditions whose syntax you can't remember</li>
+          <li>(c) choosing a chart type</li>
+          <li>(d) understanding an error such as <code>#N/A</code></li>
+          <li>(e) deciding whether a pattern supports a conclusion</li>
+        </ul>
+      </li>
+    </ol>
+
+    <div class="callout info">
+      <strong class="label">Why start here?</strong>
+      If a task is quick for you and needs checking anyway, Copilot adds a step rather than removing one. Keep your answers to question 4: the rest of the session tests them.
+    </div>
+  </section>
+
+  <!-- ================= TASK 2 ================= -->
+  <section id="t2" class="task" aria-labelledby="t2-h">
+    <h2 id="t2-h">Task 2 · Describe the dataset: you vs Copilot</h2>
+    <p class="goal">Write your own description of the dataset, then ask Copilot for one and compare. The combined, checked version is your <strong>data description</strong>. You will reuse it in Tasks 3 and 5.</p>
+
+    <ol class="steps">
+      <li>Look through all three sheets. In your lab log, write what one row is, what each column means (type and units), the time span, where values are missing, and anything that could trip up an analysis.</li>
+      <li>Open a <strong>fresh chat</strong>, upload <code>bee_colonies.xlsx</code> (paperclip / “+” icon) and run the prompt below.</li>
+      <li>Compare the two using the questions underneath. Merge them into one checked data description.</li>
+    </ol>
+
+    <div class="prompt">
+      <div class="prompt-head"><span>Example prompt (P-T-C-F-A + Accessibility)</span><button class="copy" type="button">Copy</button></div>
+<pre>PERSONA: You are a data analyst who documents datasets for other researchers.
+TASK: Write a data description of the attached workbook.
+CONTEXT: Public USDA data on honey bee colony loss and varroa mites. I will analyse it myself in Excel.
+FORMAT:
+1. What one row represents in each sheet.
+2. A table of columns: name, data type, units, plain-English meaning.
+3. Time span and places covered.
+4. Missing values: where, and how many.
+5. Anything that could trip up an analysis.
+ACCURACY: Use only what is in the file, including the "about" sheet. If you are unsure of a definition or unit, say so. Do not guess.
+ACCESSIBILITY: Plain English; define technical terms on first use; give the table as real text, not an image.</pre>
+    </div>
+
+    <h4>Think it through</h4>
+    <ol class="questions">
+      <li>Did Copilot notice that the <strong>United States</strong> row is a national total, not a seventh state?</li>
+      <li>Did it notice that percent lost is calculated differently for the United States (check the <strong>about</strong> sheet)?</li>
+      <li>Did it find the gap in April–June 2019?</li>
+      <li>Did it invent any unit, definition or number that is not in the file?</li>
+      <li>What did you spot that Copilot missed, and what did Copilot spot that you missed?</li>
+    </ol>
+
+    <div class="box">
+      <h3 style="margin-top:0">What your data description looks like</h3>
+      <p>Your data description is your <strong>checked, merged version</strong>, not Copilot's raw answer. It should look something like this:</p>
+      <div class="table-wrap">
+        <table>
+          <caption class="vh">Example data description for the bee colony workbook</caption>
+          <thead><tr><th scope="col">Item</th><th scope="col">Example</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">One row</th><td>The figures for one place in one quarter, e.g. California in January–March 2015. A “place” is either a state or the United States total. Both sheets use this layout.</td></tr>
+            <tr><th scope="row">Key columns</th><td><code>colony_lost_pct</code>: whole number, percent of colonies lost in the quarter (states: lost ÷ maximum colonies; United States: lost ÷ colonies at the start of the quarter). <code>varroa_pct</code>: number, percent of colonies affected by varroa mites at any time in the quarter. <em>(and the other columns)</em></td></tr>
+            <tr><th scope="row">Coverage</th><td>California, Florida, Georgia, New York, North Dakota, Texas and the United States total; 26 quarters, January 2015 to June 2021.</td></tr>
+            <tr><th scope="row">Missing values</th><td>April–June 2019 is blank for every place. <code>colony_max</code> is blank for the United States. A few other single blanks.</td></tr>
+            <tr><th scope="row">Watch out</th><td>Don't add the United States row to the state rows. Percentages for different stressors can add up to more than 100%, because a colony can have several.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Copy it into your lab log.</strong> This is where you use it later:</p>
+      <div class="table-wrap">
+        <table>
+          <caption class="vh">Where the data description is used in later tasks</caption>
+          <thead><tr><th scope="col">Task</th><th scope="col">What you use</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Task 3</th><td>The whole description, pasted where it says <span class="ph">[paste your data description from Task 2]</span>.</td></tr>
+            <tr><th scope="row">Task 4</th><td>The column names and units, for your axis titles.</td></tr>
+            <tr><th scope="row">Task 5</th><td>The whole description, pasted where it says <span class="ph">[paste your data description from Task 2]</span>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="drop-card amber">
+      <details class="drop">
+        <summary><h3>Uploading data: today vs your future projects</h3></summary>
+      <p style="margin-top:0">Uploading this file is fine because it contains no personal data. Under the UK GDPR, personal data is information relating to a living person who can be identified, directly or indirectly. Truly anonymous data is not covered, but pseudonymised data still is (<a href="https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/personal-information-what-is-it/what-is-personal-information-a-guide/">ICO</a>).</p>
+      <p style="margin-bottom:0">Your future data may be interviews, survey answers, patient records or unpublished results. For those, use today's habit: <strong>describe the data to Copilot, don't upload it</strong>. Enterprise data protection keeps your prompts out of model training, but it doesn't make an upload allowed if your consent forms or ethics approval say otherwise.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ================= TASK 3 ================= -->
+  <section id="t3" class="task" aria-labelledby="t3-h">
+    <h2 id="t3-h">Task 3 · Formula assistant</h2>
+    <p class="goal">You can use Copilot for formulas that are fiddly to work out yourself, then test every one. You need three new columns for Task 4.</p>
+
+    <ol class="steps">
+      <li><strong>Join</strong> <code>varroa_pct</code> onto the colony sheet (column I), matching on year, months and state.</li>
+      <li><strong>Convert</strong> the quarter text (e.g. “January-March”) into a date in column J, so Excel can plot the quarters in time order.</li>
+      <li><strong>Summarise</strong>: the average percent lost per quarter across the six states, leaving out the United States row.</li>
+    </ol>
+
+    <div class="callout info">
+      <strong class="label">How to use this prompt</strong>
+      Run it once per job. Replace <span class="ph">[describe what the formula should do]</span> with one of the three jobs above, and replace <span class="ph">[paste your data description from Task 2]</span> with the data description in your lab log. That way Copilot uses your real sheet and column names.
+    </div>
+
+    <div class="prompt">
+      <div class="prompt-head"><span>Example prompt (P-T-C-F-A + Accessibility)</span><button class="copy" type="button">Copy</button></div>
+<pre>PERSONA: You are an Excel expert who helps scientists with data representation, interpretation and formula creation.
+TASK: Write one Excel formula that <span class="ph">[describe what the formula should do, e.g. returns varroa_pct from the varroa sheet for the same year, months and state as this row]</span>.
+CONTEXT: I use <span class="ph">[Excel for Microsoft 365 on Windows]</span>. The formula goes in <span class="ph">[cell I2 of the colony sheet]</span> and will be filled down. My sheets and columns are described below.
+FORMAT: The formula in a code block, then a plain-English explanation of each part, then one way it could fail.
+ACCURACY: Use only the sheet and column names in my data description. Say which references need $ signs and why. Say what happens when the value it looks up is blank.
+ACCESSIBILITY: Explain every function name in words; no jargon without a definition.
+
+My data description:
+<span class="ph">[paste your data description from Task 2]</span></pre>
+    </div>
+
+    <h3>Then: explain it back</h3>
+    <div class="prompt">
+      <div class="prompt-head"><span>Chain prompt 2 (in a fresh chat)</span><button class="copy" type="button">Copy</button></div>
+<pre>TASK: Explain what this Excel formula does, step by step.
+FORMAT: Numbered steps, then a worked example for one row.
+ACCURACY: If the formula has an error, or gives a wrong result for blank cells, say so.
+ACCESSIBILITY: Plain English.
+
+Formula:
+<span class="ph">[paste the formula Copilot gave you]</span></pre>
+    </div>
+
+    <div class="callout info">
+      <strong class="label">Why a fresh chat?</strong>
+      In the same chat, Copilot already “knows” what the formula was meant to do. A fresh chat has only the formula, so its explanation is a fairer test of what the formula actually does.
+    </div>
+
+    <h4>Test it</h4>
+    <ul class="check">
+      <li><label><input type="checkbox"> <span>I checked three rows by hand against the varroa sheet.</span></label></li>
+      <li><label><input type="checkbox"> <span>April–June 2019 shows as blank or <code>#N/A</code>, not as 0. (A 0 would mean “no colonies affected”, which is false.)</span></label></li>
+      <li><label><input type="checkbox"> <span>The dates in column J sort in the right order.</span></label></li>
+      <li><label><input type="checkbox"> <span>My average leaves out the United States row.</span></label></li>
+      <li><label><input type="checkbox"> <span>On a Mac, the same formulas work in Excel for Microsoft 365. If a function isn't recognised, I asked Copilot for an alternative.</span></label></li>
+    </ul>
+
+    <div class="drop-card amber">
+      <details class="drop">
+        <summary><h3>Critical thinking point: an average of percentages</h3></summary>
+      <p style="margin-top:0">Your average gives every state equal weight. But California typically has almost nine times as many colonies as Georgia (compare their <code>colony_n</code> values).</p>
+      <ol class="questions">
+        <li>Ask Copilot: <em>“Is the simple average of these state percentages the same as the overall percent of colonies lost across the six states?”</em></li>
+        <li>Check it yourself for one quarter: compare your average with <code>SUM</code> of <code>colony_lost</code> ÷ <code>SUM</code> of <code>colony_max</code> for the six states.</li>
+        <li>Which number would you report to the public, and how would you describe it?</li>
+      </ol>
+      </details>
+    </div>
+  </section>
+
+  <!-- ================= TASK 4 ================= -->
+  <section id="t4" class="task" aria-labelledby="t4-h">
+    <h2 id="t4-h">Task 4 · Build a two-axis chart</h2>
+    <p class="goal">Chart percent of colonies lost and percent affected by varroa mites over time, for one state. You build the chart; Copilot helps only with the labels and the alt text.</p>
+
+    <ol class="steps">
+      <li>Filter the colony sheet to <span class="ph">[your state]</span>. Use your date (J), <code>colony_lost_pct</code> (G) and <code>varroa_pct</code> (I) from Task 3.</li>
+      <li>Ask Copilot for a quarter label column with the prompt below, and add it in column K.</li>
+    </ol>
+
+    <div class="prompt">
+      <div class="prompt-head"><span>Example prompt (P-T-C-F-A + Accessibility)</span><button class="copy" type="button">Copy</button></div>
+<pre>PERSONA: You are an Excel expert who helps scientists make clear charts.
+TASK: Write a formula that turns the date in column J into a label such as "2015 Q1".
+CONTEXT: The labels will go on the horizontal axis of a line chart showing <span class="ph">[percent of colonies lost and percent affected by varroa mites in California]</span>, quarter by quarter, 2015–2021.
+FORMAT: The formula in a code block and a one-line explanation.
+ACCURACY: Q1 is January–March, Q2 April–June, Q3 July–September, Q4 October–December. Tell me how to check the formula on three rows.
+ACCESSIBILITY: Labels must be short and readable when the chart is narrow.</pre>
+    </div>
+
+    <h3>Build the chart</h3>
+    <ol class="steps" style="counter-reset:s 2">
+      <li><strong>Select the data.</strong> With your state still filtered, select the column headers and values of <code>colony_lost_pct</code> (G) and <code>varroa_pct</code> (I). Hold <em>Ctrl</em> (Mac: <em>Cmd</em>) to select the second column.</li>
+      <li><strong>Insert a line chart.</strong> Go to <em>Insert → Line</em> and choose the first line chart.</li>
+      <li><strong>Move varroa to the secondary axis.</strong> Click the chart, then <em>Chart Design → Change Chart Type → Combo</em>. Set both series to <em>Line</em>, tick <em>Secondary Axis</em> for <code>varroa_pct</code>, and select <em>OK</em> (<a href="https://support.microsoft.com/en-US/Office/excelexp/add-or-remove-a-secondary-axis-in-a-chart-in-excel">Microsoft</a>). If you can't see <em>Combo</em> (e.g. on some Mac versions), right-click the varroa line, choose <em>Format Data Series</em> and select <em>Secondary Axis</em>.</li>
+      <li><strong>Add your quarter labels.</strong> Go to <em>Chart Design → Select Data</em>. Under <em>Horizontal (Category) Axis Labels</em>, select <em>Edit</em> and select your labels in column K.</li>
+      <li><strong>Make it accessible.</strong> Chart title and axis titles with units, direct labels, a blue/orange palette, no 3D or shadows.</li>
+    </ol>
+
+    <p><strong>Alt text:</strong> save your chart as a picture, upload it to a fresh Copilot chat for alt text, and check the result with the alt-text questions from Session 2, Task 2.</p>
+
+    <div class="drop-card amber">
+      <details class="drop">
+        <summary><h3>Two axes, two stories</h3></summary>
+      <p style="margin-top:0">Each axis of a dual-axis chart can be scaled however you like, so the same data can be made to look related, or not. General audiences can misread these charts (<a href="https://digitalblog.ons.gov.uk/2019/07/03/dueling-with-axis-the-problems-with-dual-axis-charts">ONS Digital blog</a>; <a href="https://www.datawrapper.de/blog/dualaxis">Datawrapper, 2018</a>).</p>
+      <p>That is not the whole story. In July 2026, Datawrapper updated its 2018 article: it now allows dual-axis charts, because in some cases they are the best way to show the data, and readers used to them (e.g. in finance) are not misled. It still suggests considering alternatives for a general audience (<a href="https://www.datawrapper.de/blog/dualaxis">Datawrapper, edit July 2026</a>). Its new guide explains when dual axes work, for example when the two series have different units, and how to make them well, for example scaling both axes the same way and starting both at zero (<a href="https://www.datawrapper.de/blog/dual-axis-charts-guide">Datawrapper guide, 2026</a>).</p>
+      <ol class="questions">
+        <li>Change the secondary axis maximum (e.g. from 100 to 30). How does the story change? Which scale is fair to both measures?</li>
+        <li>Who is your audience? Are they likely to be used to reading dual-axis charts?</li>
+        <li>Ask Copilot: <em>“When is a dual-axis chart a good choice to show the relationship between these two measures, and when is it not?”</em> Compare its answer with the sources above.</li>
+        <li>Compare your chart with one alternative, such as two charts side by side or a scatter plot of one measure against the other. Which shows your message more clearly for your audience, and why?</li>
+      </ol>
+      </details>
+    </div>
+
+    <h4>Check it</h4>
+    <ul class="check">
+      <li><label><input type="checkbox"> <span>Both axes have titles with units, and both start at zero.</span></label></li>
+      <li><label><input type="checkbox"> <span>April–June 2019 shows as a gap, not a drop to zero.</span></label></li>
+      <li><label><input type="checkbox"> <span>The two lines can be told apart in greyscale (line style or direct labels, not colour alone).</span></label></li>
+      <li><label><input type="checkbox"> <span>The alt text matches my chart and my numbers, not what Copilot expected to see.</span></label></li>
+    </ul>
+  </section>
+
+  <!-- ================= TASK 5 ================= -->
+  <section id="t5" class="task" aria-labelledby="t5-h">
+    <h2 id="t5-h">Task 5 · Interpret: you first, then Copilot</h2>
+    <p class="goal">Write your own conclusion, then ask Copilot for its interpretation and a critique of yours. Decide whether its input added value.</p>
+
+    <ol class="steps">
+      <li>Write 3–4 sentences in your lab log on what your chart and averages show. You can add <code>=CORREL</code> between <code>colony_lost_pct</code> and <code>varroa_pct</code> for your state.</li>
+      <li>Run the prompt below with <strong>summary numbers only</strong>, not the whole dataset.</li>
+      <li>Compare Copilot's answer with yours using the questions underneath.</li>
+    </ol>
+
+    <div class="callout info">
+      <strong class="label">Why you first?</strong>
+      If you read Copilot's interpretation first, it is hard to tell afterwards which ideas were yours. Writing first also gives you something to measure Copilot against.
+    </div>
+
+    <div class="callout info">
+      <strong class="label">How to use this prompt</strong>
+      Replace <span class="ph">[paste your data description from Task 2]</span> with your data description, <span class="ph">[paste your summary numbers]</span> with the values you calculated in Tasks 1, 3 and 4, and <span class="ph">[paste your draft conclusion]</span> with your sentences from step 1.
+    </div>
+
+    <div class="prompt">
+      <div class="prompt-head"><span>Example prompt (P-T-C-F-A + Accessibility)</span><button class="copy" type="button">Copy</button></div>
+<pre>PERSONA: You are a bee scientist and a careful peer reviewer.
+TASK: First give your own interpretation of my summary results. Then critique my draft conclusion.
+CONTEXT: The data are described below. My audience is <span class="ph">[readers of a public science blog]</span>.
+FORMAT:
+1. Your interpretation in 3 sentences.
+2. Each sentence of my conclusion marked "supported", "overclaims" or "not supported", with a reason.
+3. Three other explanations I should consider.
+4. A revised conclusion under 60 words.
+ACCURACY: Use only my numbers and data description. Don't add statistics or studies. Flag any place where a correlation is read as a cause. Label anything from outside knowledge so I can check it.
+ACCESSIBILITY: Plain English, reading age about 12; define "correlation" if you use it.
+
+My data description:
+<span class="ph">[paste your data description from Task 2]</span>
+
+My summary numbers:
+<span class="ph">[paste your summary numbers]</span>
+
+My draft conclusion:
+<span class="ph">[paste your draft conclusion]</span></pre>
+    </div>
+
+    <h4>Think it through</h4>
+    <ol class="questions">
+      <li>Where did Copilot agree with you, and where not? Check each disagreement against your spreadsheet.</li>
+      <li>Did it suggest explanations you hadn't thought of (e.g. season, other stressors, colonies added to replace losses)? Can your data support or rule them out?</li>
+      <li>Did it add numbers, studies or facts that are not in your data? Can you verify them?</li>
+      <li>Was this step worth it? Compare with your answers to Task 1, question 4.</li>
+    </ol>
+
+  </section>
+
+  <!-- ================= EVALUATE ================= -->
+  <section id="evaluate" aria-labelledby="eval-h">
+    <h2 id="eval-h">Evaluate your outputs</h2>
+    <p>You can use these five questions to ensure that you are generating an adequate output.</p>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Evaluation criteria</caption>
+        <thead><tr><th scope="col">Criterion</th><th scope="col">Ask yourself</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Accuracy</th><td>Does every formula and number match your own check in Excel?</td></tr>
+          <tr><th scope="row">Value added</th><td>Did Copilot save time or add an idea, once you count the time spent checking it?</td></tr>
+          <tr><th scope="row">Interpretation</th><td>Do the claims stay within what the data show? Is any correlation presented as a cause?</td></tr>
+          <tr><th scope="row">Accessibility</th><td>Plain-English explanations, readable charts, alt text and a text description?</td></tr>
+          <tr><th scope="row">Transparency</th><td>Are the data source and licence credited? Is Copilot's role disclosed?</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= LOG ================= -->
+  <section id="log" aria-labelledby="log-h">
+    <h2 id="log-h">Your lab log</h2>
+    <p>The lab log is only a suggestion to help you keep track of your work: we will not check it at the end of the session. It doesn't need to be polished, and bullet points are fine.</p>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Lab log template</caption>
+        <thead><tr><th scope="col">Field</th><th scope="col">What to write</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Final prompt</th><td>Copied exactly.</td></tr>
+          <tr><th scope="row">Time</th><td>By hand vs with Copilot, including checking time (Task 1).</td></tr>
+          <tr><th scope="row">Data description</th><td>Your checked version from Task 2.</td></tr>
+          <tr><th scope="row">Checks</th><td>How you tested each formula or claim, and what you found.</td></tr>
+          <tr><th scope="row">Problems spotted</th><td>Wrong numbers, invented facts, or a gap between what Copilot claimed and what you found.</td></tr>
+          <tr><th scope="row">Ethics notes</th><td>Your thoughts on uploading data (Task 2), for the ethics lecture.</td></tr>
+          <tr><th scope="row">Verdict</th><td>For each task: was Copilot worth using? Would you use it again for this?</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= SUMMARY ================= -->
+  <section id="responsible" aria-labelledby="resp-h">
+    <h2 id="resp-h">Summary</h2>
+    <div class="grid2">
+      <div class="card"><h3 style="margin-top:0">Disclose</h3><p>Say how you used Copilot, e.g. <em>“Excel formulas drafted with Microsoft Copilot and tested by [name].”</em></p></div>
+      <div class="card"><h3 style="margin-top:0">Protect</h3><p>Use your UofG login only. Describe personal or unpublished data to Copilot; never upload it.</p></div>
+      <div class="card"><h3 style="margin-top:0">Credit</h3><p>Cite your data source and licence, e.g. USDA NASS via TidyTuesday (CC0).</p></div>
+      <div class="card"><h3 style="margin-top:0">Verify</h3><p>Every number you report comes from your spreadsheet. “Copilot said so” is not a source.</p></div>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  GenAI for Data Analysis · University of Glasgow
+</footer>
+
+<script>
+// Copy buttons: copy the prompt text (placeholders included, as plain text)
+document.querySelectorAll('.prompt').forEach(function(box){
+  var btn = box.querySelector('.copy');
+  var pre = box.querySelector('pre');
+  if(!btn || !pre) return;
+  btn.setAttribute('aria-label','Copy prompt to clipboard');
+  btn.addEventListener('click', function(){
+    var text = pre.innerText;
+    var done = function(){ btn.textContent = 'Copied ✓'; setTimeout(function(){ btn.textContent = 'Copy'; }, 1800); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(function(){ fallback(text); done(); });
+    } else { fallback(text); done(); }
+  });
+});
+function fallback(text){
+  var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly','');
+  ta.style.position='absolute'; ta.style.left='-9999px'; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta);
+}
+
+// Remember checkboxes per viewer (best-effort only)
+var boxes = document.querySelectorAll('.check input[type=checkbox]');
+var KEY = 'biol5439-s3-checks';
+var saved = {};
+try{ saved = JSON.parse(localStorage.getItem(KEY) || '{}'); }catch(e){ saved = {}; }
+boxes.forEach(function(cb, i){
+  if(saved[i]) cb.checked = true;
+  cb.addEventListener('change', function(){
+    saved[i] = cb.checked;
+    try{ localStorage.setItem(KEY, JSON.stringify(saved)); }catch(e){}
+  });
+});
+
+// Theme toggle
+var tbtn = document.getElementById('themeToggle');
+try{ var t = localStorage.getItem('biol5439-theme'); if(t) document.documentElement.setAttribute('data-theme', t); }catch(e){}
+tbtn.addEventListener('click', function(){
+  var cur = document.documentElement.getAttribute('data-theme');
+  var dark = cur ? cur === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var next = dark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try{ localStorage.setItem('biol5439-theme', next); }catch(e){}
+});
+
+// Print: open all details
+window.addEventListener('beforeprint', function(){ document.querySelectorAll('details').forEach(function(d){ d.open = true; }); });
+</script>
+</body>
+</html>
