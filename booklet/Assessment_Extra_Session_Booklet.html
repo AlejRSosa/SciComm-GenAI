@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assessment-focused extra session</title>
+<meta name="description" content="Extra session booklet: finding sources and public datasets, reading with Copilot, and cleaning data with a change log for the Crisis Information Pack assessment.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF8F4; --paper:#FFFFFF; --ink:#1E1B2E; --muted:#55506A; --line:#E6DFD8;
+  --accent:#A3195B; --accent-soft:#FBE6F0; --accent-strong:#7E1146;
+  --code-bg:#F4EFEA; --ph:#FFE9A8; --ph-ink:#5A3F00;
+  --graphics:#1D5FA8; --audio:#7A4AB8; --video:#B5480F; --interactive:#0E7A5F; --text:#4B4B5C; --platform:#A3195B;
+  --ok:#0E6B4F; --warn:#8A5A00; --warn-bg:#FFF4D6; --info-bg:#EAF2FB;
+  --focus:#1D5FA8;
+  --radius:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16141F; --paper:#1F1C2B; --ink:#F1EEF7; --muted:#B9B3CC; --line:#36314A;
+    --accent:#F27AB6; --accent-soft:#3A1F2F; --accent-strong:#FF9ACB;
+    --code-bg:#262236; --ph:#5A4712; --ph-ink:#FFE9A8;
+    --graphics:#7DB3F0; --audio:#C2A2F2; --video:#F5A26E; --interactive:#5FD3AE; --text:#C9C7D6; --platform:#F27AB6;
+    --ok:#5FD3AE; --warn:#F3C76A; --warn-bg:#352A10; --info-bg:#1C2A3B; --focus:#7DB3F0;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16141F; --paper:#1F1C2B; --ink:#F1EEF7; --muted:#B9B3CC; --line:#36314A;
+  --accent:#F27AB6; --accent-soft:#3A1F2F; --accent-strong:#FF9ACB;
+  --code-bg:#262236; --ph:#5A4712; --ph-ink:#FFE9A8;
+  --graphics:#7DB3F0; --audio:#C2A2F2; --video:#F5A26E; --interactive:#5FD3AE; --text:#C9C7D6; --platform:#F27AB6;
+  --ok:#5FD3AE; --warn:#F3C76A; --warn-bg:#352A10; --info-bg:#1C2A3B; --focus:#7DB3F0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:1.0625rem;line-height:1.65}
+a{color:var(--accent);text-underline-offset:3px}
+a:hover{color:var(--accent-strong)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:4px}
+.skip{position:absolute;left:-9999px;top:0;background:var(--ink);color:var(--bg);padding:.6rem 1rem;z-index:100}
+.skip:focus{left:1rem;top:1rem}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;line-height:1.15;letter-spacing:-.01em}
+h2{font-size:clamp(1.6rem,3.2vw,2.1rem);margin:0 0 .4rem}
+h3{font-size:1.25rem;margin:1.6rem 0 .5rem}
+h4{font-size:1rem;margin:1.2rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+p{margin:.6rem 0}
+code{font-family:"JetBrains Mono",Consolas,monospace;font-size:.88em;background:var(--code-bg);padding:.1em .35em;border-radius:5px}
+
+/* ---------- header ---------- */
+.cover{background:#1E1B2E;color:#FBF8F4;padding:3.5rem 16px 3rem;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,#DB4AA0 0,#DB4AA0 40%,transparent 41%);opacity:.9}
+@media (max-width:640px){.cover::after{width:220px;height:220px;right:-110px;top:-110px}}
+.cover-inner{max-width:1120px;margin:0 auto;position:relative;z-index:1}
+.eyebrow{font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.8rem;color:#FFB3D7}
+.cover h1{font-size:clamp(2.2rem,6vw,3.8rem);margin:.4rem 0 .8rem;max-width:16ch;color:#fff}
+.cover .lede{max-width:60ch;font-size:1.15rem;color:#E9E5F2}
+.cover-meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.4rem}
+.pill{display:inline-flex;align-items:center;gap:.35rem;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:.25rem .8rem;font-size:.9rem;color:#fff}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:2.5rem}
+nav.toc{position:sticky;top:1rem;align-self:start;margin-top:2rem;font-size:.95rem;max-height:calc(100vh - 2rem);overflow:auto}
+nav.toc h2{font-family:inherit;font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+nav.toc ol{list-style:none;padding:0;margin:0}
+nav.toc li a{display:block;padding:.3rem .6rem;border-left:3px solid var(--line);color:var(--ink);text-decoration:none}
+nav.toc li a:hover{border-left-color:var(--accent);background:var(--accent-soft)}
+nav.toc .lvl{display:inline-block;min-width:1.7em;font-family:"JetBrains Mono",monospace;font-size:.8rem;color:var(--muted)}
+main{min-width:0;padding:2rem 0 4rem}
+section{margin-bottom:3.5rem;scroll-margin-top:1rem}
+.theme-toggle{margin-top:1rem;font:inherit;font-size:.85rem;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:.3rem .8rem;cursor:pointer}
+@media (max-width:860px){
+  .wrap{grid-template-columns:1fr;gap:0}
+  nav.toc{position:static;max-height:none;margin-top:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem}
+}
+
+/* ---------- blocks ---------- */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.4rem 1.5rem}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
+.callout{border-radius:var(--radius);padding:1rem 1.2rem;margin:1rem 0;border-left:5px solid}
+.callout.info{background:var(--info-bg);border-color:var(--graphics)}
+.callout.warn{background:var(--warn-bg);border-color:var(--warn)}
+.callout.a11y{background:var(--accent-soft);border-color:var(--accent)}
+.callout strong.label{display:block;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.2rem}
+.callout ul{margin:.3rem 0;padding-left:1.2rem}
+
+/* flow diagram */
+.flow{display:grid;grid-template-columns:1fr auto 1.6fr auto 1fr;align-items:center;gap:.8rem;margin:1.2rem 0}
+.flow .node{background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:.8rem;text-align:center;font-weight:700}
+.flow .core{border-color:var(--accent);background:var(--accent-soft)}
+.flow .mods{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.flow .mods .node{font-size:.95rem;border-left-width:6px}
+.flow .arrow{font-size:1.6rem;color:var(--muted)}
+.flow small{display:block;font-weight:400;color:var(--muted);font-size:.82rem}
+@media (max-width:640px){.flow{grid-template-columns:1fr}.flow .arrow{transform:rotate(90deg);justify-self:center}}
+
+/* level header */
+.level-head{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .8rem;margin-bottom:.6rem}
+.lvl-num{font-family:"JetBrains Mono",monospace;font-weight:600;font-size:.85rem;background:var(--ink);color:var(--bg);padding:.2rem .6rem;border-radius:6px}
+.tag{font-size:.82rem;font-weight:700;padding:.15rem .65rem;border-radius:999px;border:2px solid currentColor}
+.tag.graphics{color:var(--graphics)} .tag.audio{color:var(--audio)} .tag.video{color:var(--video)}
+.tag.interactive{color:var(--interactive)} .tag.text{color:var(--text)} .tag.platform{color:var(--platform)}
+.diff{display:inline-flex;gap:3px;align-items:center;font-size:.82rem;color:var(--muted)}
+.diff i{width:10px;height:10px;border-radius:50%;border:2px solid var(--muted);display:inline-block}
+.diff i.on{background:var(--ink);border-color:var(--ink)}
+.time{font-size:.85rem;color:var(--muted)}
+.core-badge{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ok)}
+.stretch-badge{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--warn)}
+.goal{font-size:1.1rem;color:var(--muted);max-width:65ch}
+
+/* prompt boxes */
+.prompt{position:relative;background:var(--code-bg);border:1px solid var(--line);border-radius:12px;margin:.8rem 0 1rem}
+.prompt-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .9rem;border-bottom:1px solid var(--line);font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.prompt pre{margin:0;padding:1rem;white-space:pre-wrap;word-wrap:break-word;font-family:"JetBrains Mono",Consolas,monospace;font-size:.86rem;line-height:1.6;color:var(--ink)}
+.ph{background:var(--ph);color:var(--ph-ink);border-radius:4px;padding:0 .2em}
+.copy{font:inherit;font-size:.8rem;font-weight:700;text-transform:none;letter-spacing:0;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.25rem .7rem;cursor:pointer}
+.copy:hover{border-color:var(--accent)}
+
+/* steps */
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:.6rem 0}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 .9rem 2.6rem}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.8rem;height:1.8rem;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center;font-size:.9rem}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) ol.steps>li::before{color:#1E1B2E}}
+:root[data-theme="dark"] ol.steps>li::before{color:#1E1B2E}
+
+/* checklists */
+.check{list-style:none;padding:0;margin:.4rem 0}
+.check li{margin:.35rem 0}
+.check label{display:flex;gap:.6rem;align-items:flex-start;cursor:pointer}
+.check input{width:1.15rem;height:1.15rem;margin-top:.3rem;accent-color:var(--accent);flex:none}
+
+/* tables */
+.table-wrap{overflow-x:auto;margin:.8rem 0;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:.93rem;background:var(--paper)}
+th,td{text-align:left;vertical-align:top;padding:.6rem .8rem;border-bottom:1px solid var(--line)}
+th{background:var(--code-bg);font-size:.82rem;text-transform:uppercase;letter-spacing:.05em}
+tr:last-child td{border-bottom:none}
+
+details{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:.2rem 1rem;margin:.8rem 0}
+details summary{cursor:pointer;font-weight:700;padding:.6rem 0}
+details[open] summary{border-bottom:1px solid var(--line);margin-bottom:.6rem}
+
+.path{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;margin:1rem 0}
+.path .card{padding:1rem 1.1rem}
+.path h3{margin:.2rem 0 .4rem;font-size:1.05rem}
+
+footer{border-top:1px solid var(--line);padding:2rem 16px;color:var(--muted);font-size:.9rem;text-align:center}
+
+
+.vh{position:absolute!important;left:-9999px;width:1px;height:1px;overflow:hidden}
+.setup-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem;margin:1rem 0}
+@media (max-width:620px){.setup-grid{grid-template-columns:1fr}}
+tr.emph th,tr.emph td{background:var(--accent-soft)}
+tr.emph th{border-left:5px solid var(--accent)}
+tr.emph td strong{color:var(--accent-strong)}
+.note{display:inline-block;margin-top:.35rem;font-size:.88rem;font-style:italic;color:var(--muted)}
+.checkers-title{font-weight:700;margin-bottom:.2rem}
+.checkers{margin-top:0;padding-left:1.4rem}
+ol.questions{padding-left:1.3rem}
+ol.questions>li{margin:.45rem 0}
+ol.questions ul{list-style:none;padding-left:.4rem;margin:.3rem 0}
+.task h2{margin-bottom:.2rem}
+.cost-card{border:2px solid var(--warn);background:var(--warn-bg);border-radius:var(--radius);padding:1.2rem 1.4rem;margin:1.2rem 0}
+.cost-card h3{margin:0 0 .6rem}
+.cost-card h4{margin:.2rem 0 .2rem;color:var(--ink)}
+.cost-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem}
+.cost-grid p{margin:.2rem 0;font-size:.97rem}
+.cost-foot{margin:.9rem 0 0;padding-top:.7rem;border-top:1px solid var(--warn)}
+
+
+.box{background:var(--paper);border:2px solid var(--accent);border-radius:var(--radius);padding:1.2rem 1.5rem;margin:1.2rem 0}
+.box p:last-child,.box ul:last-child{margin-bottom:0}
+main p, main li, .callout, .cost-card p{text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+
+
+details.drop{border-radius:var(--radius);padding:.9rem 1.2rem;margin:1rem 0}
+details.callout.drop{border:0;border-left:5px solid}
+details.callout.warn.drop{background:var(--warn-bg);border-color:var(--warn)}
+details.callout.info.drop{background:var(--info-bg);border-color:var(--graphics)}
+details.drop>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:.6rem;padding:0}
+details.drop>summary::-webkit-details-marker{display:none}
+details.drop>summary::before{content:"▸";font-size:1rem;color:var(--muted);transition:transform .15s}
+details.drop[open]>summary::before{transform:rotate(90deg)}
+details.drop>summary .label{margin:0}
+details.drop>summary h3{margin:0;display:inline}
+details.drop[open]>summary{border-bottom:0;margin-bottom:.6rem}
+.cost-card details.drop{background:transparent;border:0;padding:0;margin:0}
+
+
+.drop-card{border:2px solid var(--dc);background:var(--dbg);border-radius:var(--radius);padding:1.1rem 1.4rem;margin:1.2rem 0}
+.drop-card.amber{--dc:var(--warn);--dbg:var(--warn-bg)}
+.drop-card.pink{--dc:var(--accent);--dbg:var(--accent-soft)}
+.drop-card.blue{--dc:var(--graphics);--dbg:var(--info-bg)}
+.drop-card details.drop{background:transparent;border:0;padding:0;margin:0}
+.drop-card details.drop>summary h3{margin:0;font-size:1.2rem}
+.drop-card details.drop[open]>summary{margin-bottom:.8rem}
+.drop-card .cost-foot{border-top-color:var(--dc)}
+.drop-card ol.questions,.drop-card ul{margin-bottom:.4rem}
+.box{border-color:var(--line)!important}
+.legend{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.3rem;margin:1.2rem 0}
+.legend h3{margin:0 0 .5rem;font-size:1.1rem}
+.legend ul{list-style:none;padding:0;margin:0 0 .4rem}
+.legend li{display:flex;align-items:baseline;gap:.6rem;margin:.3rem 0;text-align:left}
+.legend p{margin:.4rem 0 0;font-size:.95rem;text-align:left}
+.sw{flex:none;width:1.1rem;height:1.1rem;border-radius:4px;border:2px solid;transform:translateY(.15rem)}
+.sw-blue{background:var(--info-bg);border-color:var(--graphics)}
+.sw-pink{background:var(--accent-soft);border-color:var(--accent)}
+.sw-amber{background:var(--warn-bg);border-color:var(--warn)}
+.sw-grey{background:var(--code-bg);border-color:var(--line)}
+.sw-ph{background:var(--ph);border-color:var(--ph)}
+
+@media print{
+  nav.toc,.copy,.theme-toggle,.skip{display:none!important}
+  .wrap{display:block}
+  body{background:#fff;color:#000;font-size:11pt}
+  .cover{background:#fff;color:#000;border-bottom:3px solid #A3195B;padding:1rem 0}
+  .cover::after{display:none}
+  .cover h1,.cover .lede,.pill{color:#000}
+  .pill{border-color:#999}
+  section{page-break-inside:auto}
+  .task{page-break-before:always}
+  details{border:none;padding:0}
+  details>*{display:block}
+  a{color:#000}
+}
+.setup-grid .card li{text-align:left;hyphens:manual;-webkit-hyphens:manual}
+td code{overflow-wrap:anywhere}
+.hl{background:var(--info-bg);box-shadow:inset 0 -2px 0 var(--graphics);padding:0 .15em;border-radius:3px;font-weight:700}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+
+<header class="cover">
+  <div class="cover-inner">
+    <h1>Assessment-focused extra session</h1>
+    <p class="lede">Find your sources, read them with Copilot as an assistant, then clean a real public dataset and log every change, using GenAI only where it adds to your own research skills.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="toc" aria-labelledby="toc-title">
+    <h2 id="toc-title">Contents</h2>
+    <ol>
+      <li><a href="#start"><span class="lvl">1.</span>Before you start</a></li>
+      <li><a href="#a11y"><span class="lvl">2.</span>Accessibility</a></li>
+      <li><a href="#t1"><span class="lvl">3.</span>Task 1: How to find a suitable dataset</a></li>
+      <li><a href="#t2"><span class="lvl">4.</span>Task 2: Read with Copilot</a></li>
+      <li><a href="#t3"><span class="lvl">5.</span>Task 3: Clean and log</a></li>
+      <li><a href="#evaluate"><span class="lvl">6.</span>Evaluate your outputs</a></li>
+      <li><a href="#log"><span class="lvl">7.</span>Your lab log</a></li>
+      <li><a href="#responsible"><span class="lvl">8.</span>Summary</a></li>
+    </ol>
+    <button class="theme-toggle" type="button" id="themeToggle">Switch light/dark</button>
+  </nav>
+
+  <main id="main">
+
+  <!-- ================= INTRO ================= -->
+  <section id="start" aria-labelledby="start-h">
+    <h2 id="start-h">Before you start</h2>
+    <p>In Session 3 you analysed a dataset in Excel and charted it yourself, with Copilot as a chat partner. Today covers the parts of your <strong>Crisis Information Pack</strong> that come <em>before</em> that: finding sources and datasets, and cleaning the data with a change log. We work through one short case study from start to finish: one dataset and one paper.</p>
+
+    <div class="callout info">
+      <strong class="label">How today works</strong>
+      Think first, then use GenAI to check or challenge your work, not to replace it. Use it <strong>when it actually adds to your research skills</strong>, and write down what you did. Doing a step yourself is always allowed, as long as you explain it in your report.
+    </div>
+
+    <div class="setup-grid">
+      <div class="card">
+        <h3 style="margin-top:0">Set up</h3>
+        <ol class="steps">
+          <li>Go to <a href="https://m365.cloud.microsoft/chat">m365.cloud.microsoft/chat</a> and sign in with your <strong>UofG account</strong>. Check for the green shield at the top of the chat (<a href="https://www.gla.ac.uk/myglasgow/it/365/copilot/guidance">UofG IT</a>).</li>
+          <li>Download the <strong>Analysis Workbook template</strong> from Moodle and save a copy.</li>
+          <li>Open the UKHSA page <a href="https://www.gov.uk/government/publications/measles-historic-confirmed-cases-notifications-and-deaths/measles-historic-confirmed-cases-notifications-and-deaths">Measles: historic confirmed cases, notifications and deaths</a>. A backup copy of the table is on Moodle.</li>
+          <li>Open a blank Word document for your <a href="#log">lab log</a>.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">What basic Copilot can and can't do</h3>
+        <div class="table-wrap" style="margin:0">
+        <table>
+          <caption class="vh">Capabilities of the basic institutional Copilot for research and data cleaning</caption>
+          <thead><tr><th scope="col">Job</th><th scope="col">Copilot does it?</th></tr></thead>
+          <tbody>
+            <tr><td>Search the web and summarise</td><td><strong>Yes</strong>, it is web-grounded (<a href="https://support.microsoft.com/en-us/topic/get-started-with-microsoft-copilot-61033adf-484d-45f5-a8c3-b89876963bd8">Microsoft</a>). You open and check every link</td></tr>
+            <tr><td>Read files you upload (e.g. PDF, Word)</td><td><strong>Yes</strong> (<a href="https://support.microsoft.com/en-us/microsoft-copilot/file-upload-in-microsoft-copilot">file formats</a>). Used in Task 2</td></tr>
+            <tr><td>Find papers for you</td><td><strong>Not reliably.</strong> Chatbots can invent references. You search PubMed (Task 1)</td></tr>
+            <tr><td>Clean your spreadsheet</td><td><strong>No.</strong> Basic Copilot has no Copilot inside Excel (<a href="https://learn.microsoft.com/en-us/copilot/overview">Microsoft</a>). You clean the data; Copilot only explains options</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <h3>Where today fits in your assessment</h3>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Assessment brief sections covered today</caption>
+        <thead><tr><th scope="col">Brief section</th><th scope="col">Covered by</th><th scope="col">Where it goes</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Research</th><td>Task 1 (sources, databases, why chosen, what was missing) and Task 2 (insights, cross-source synthesis)</td><td>Research section of your pack; prompts in the appendix</td></tr>
+          <tr><th scope="row">Analysis: Source Information, Data Dictionary, Data Cleaning Log</th><td>Task 3</td><td>The matching sheets of the Analysis Workbook</td></tr>
+          <tr><th scope="row">Analysis: trends, statistics and charts</th><td>Session 3 (not repeated today)</td><td><em>Analysis</em> and <em>Chart</em> sheets</td></tr>
+          <tr><th scope="row">Appendix</th><td>Your numbered prompt log, from every task</td><td>Appendix; the number goes in the workbook's <em>Prompt Log #</em> column</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Recap: what you bring from Sessions 1 to 3</h3>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Frameworks from earlier sessions and how they are used today</caption>
+        <thead><tr><th scope="col">Earlier tool</th><th scope="col">How you use it today</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">P-T-C-F-A + Accessibility</th><td>Every example prompt uses PERSONA / TASK / CONTEXT / FORMAT / ACCURACY / ACCESSIBILITY. <span class="hl">Today ACCURACY says what Copilot must not invent: references, codes and definitions.</span></td></tr>
+          <tr><th scope="row">Chain prompting and fact-checking</th><td>Every claim goes back to its source. <span class="hl">Every reference is checked in PubMed or on the publisher's page.</span></td></tr>
+          <tr><th scope="row">“Excel does it / I do it / Copilot could help” (Session 3, Task 1)</th><td>The same sorting, now for searching, reading and cleaning.</td></tr>
+          <tr><th scope="row">Data description (Session 3, Task 2)</th><td>Grows into your <em>Source Info</em> and <em>Data Dictionary</em> sheets in Task 3.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warn">
+      <strong class="label">Ground rules</strong>
+      <ul>
+        <li>UofG Copilot is the only AI service the University approves for University data (<a href="https://www.gla.ac.uk/myglasgow/it/365/copilot/guidance">UofG IT</a>). For this assessment you may use another research platform, but you must name it and explain how you used it.</li>
+        <li><strong>Every number comes from your spreadsheet; every reference from a database or publisher.</strong> “Copilot said so” is not a source.</li>
+        <li>Today's data are public and contain no personal information. <strong>Never upload personal, unpublished or confidential material</strong> (Session 3, Task 2).</li>
+        <li>Never edit the Raw Data sheet. Every change happens on Clean Data and goes in the Cleaning Log.</li>
+      </ul>
+    </div>
+
+    <h3>Running example used in this booklet</h3>
+    <p>You are an adviser in the <strong>Prime Minister's Office</strong>, preparing a pack on <strong>measles in England</strong>. In January 2026 the WHO announced that the UK had lost its measles elimination status, based on the spread of cases in 2024 (<a href="https://ihv.org.uk/news-and-views/news/uk-loses-measles-elimination-status/">iHV</a>). England had 2,911 laboratory-confirmed cases in 2024, the highest since 2012, and 959 in 2025. From 1 January to 9 November 2026 there were 1,055 (<a href="https://www.gov.uk/government/publications/measles-epidemiology-2023-to-2026/confirmed-cases-of-measles-in-england-by-month-age-region-and-upper-tier-local-authority-2026">UKHSA</a>). Two children died of measles in England in the first half of 2026 (<a href="https://www.gov.uk/government/news/latest-measles-figures-published-as-two-deaths-confirmed-in-2026">UKHSA</a>). In 2025–26, 83.8% of five-year-olds had had both MMR doses, and no vaccine in the childhood schedule now meets the WHO 95% target (<a href="https://www.gov.uk/government/news/parents-urged-to-vaccinate-children-at-the-right-time-to-protect-them">UKHSA</a>).</p>
+    <p>To keep the case study short, you work with just two sources:</p>
+    <ul>
+      <li><strong>Dataset:</strong> the table <em>Confirmed cases of measles by region: 2012 to 2025</em>, on the UKHSA page above (Open Government Licence v3.0). It has one row per English region, one column per year, and totals.</li>
+      <li><strong>Paper:</strong> Jary H, Pullen A, et al. Sociodemographic inequalities in the epidemiology and vaccine uptake within a large outbreak of measles in Birmingham, England, 2023 to 2024. <em>Euro Surveill.</em> 2025;30(16):2400652 (<a href="https://doi.org/10.2807/1560-7917.ES.2025.30.16.2400652">open access, CC BY 4.0</a>). You will find it in PubMed yourself in Task 1.</li>
+    </ul>
+    <p>Replace everything highlighted <span class="ph">[like this]</span> with your own choices, for example your own crisis topic.</p>
+  </section>
+
+  <!-- ================= ACCESSIBILITY ================= -->
+  <section id="a11y" aria-labelledby="a11y-h">
+    <h2 id="a11y-h">Accessibility</h2>
+    <p>Today's outputs are logs, tables and spreadsheets that someone else must be able to read and repeat. Build accessibility <strong>into the prompt</strong> and into your own Excel habits from the first step.</p>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Accessibility requirements per format</caption>
+        <thead><tr><th scope="col">Format</th><th scope="col">Put in the prompt</th><th scope="col">Check yourself afterwards</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Copilot's summaries</th><td>Plain English; define technical terms on first use; tables as real text, not images</td><td>Could you explain the answer to a classmate without Copilot?</td></tr>
+          <tr><th scope="row">Search log and source list</th><td>One row per search or source; full names, not abbreviations</td><td>Could someone else repeat your search from the log alone?</td></tr>
+          <tr><th scope="row">Spreadsheets</th><td>One header row; no merged cells; meaning never shown by colour alone; descriptive sheet and column names</td><td>Excel: <em>Review → Check Accessibility</em>. Fix what it flags (<a href="https://support.microsoft.com/topic/a16f6de0-2f39-4a2b-8bd8-5ad801426c7f">Microsoft</a>).</td></tr>
+          <tr><th scope="row">Methodology statement</th><td>Short sentences; say what the tool did and what you did</td><td>Word: <em>Review → Check Accessibility</em> and readability statistics</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= TASK 1 ================= -->
+  <section id="t1" class="task" aria-labelledby="t1-h">
+    <h2 id="t1-h">Task 1 · How to find a suitable dataset</h2>
+    <p class="goal">In your assessment, you will need to find one dataset and source papers, and record how you found them. You choose whether to search on your own or with AI help; either is fine if you explain it.</p>
+
+    <ol class="steps">
+      <li><strong>Find a dataset</strong> using the table below. For the case study, open the UKHSA historic measles page you used in Set up.</li>
+      <li><strong>Search the literature</strong> on your own, with AI help, or both (see the two routes below).</li>
+      <li><strong>Record every search</strong> in your <em>search log</em> and list the sources you keep.</li>
+    </ol>
+
+    <div class="drop-card blue">
+      <details class="drop">
+        <summary><h3>Why write your question first?</h3></summary>
+      <p style="margin:0">Your question decides which data and papers are relevant. If Copilot writes it, you lose the thinking the Research section is marked on.</p>
+      </details>
+    </div>
+
+    <h3>Where to find public data</h3>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Public data sources with links and what to expect</caption>
+        <thead><tr><th scope="col">Source</th><th scope="col">What you'll find</th><th scope="col">Watch out</th></tr></thead>
+        <tbody>
+          <tr><th scope="row" colspan="3">UK: national</th></tr>
+          <tr><td><a href="https://ukhsa-dashboard.data.gov.uk/topics/measles">UKHSA data dashboard</a></td><td>Weekly infectious disease figures for England; CSV or JSON download per chart</td><td>Figures are provisional and can change</td></tr>
+          <tr><td><a href="https://www.gov.uk/government/publications/measles-historic-confirmed-cases-notifications-and-deaths/measles-historic-confirmed-cases-notifications-and-deaths">UKHSA measles: historic confirmed cases, notifications and deaths</a></td><td>Yearly measles cases in England by age group and region since 2012; deaths since 1940</td><td>Confirmed cases and notifications are different measures. <strong>Today's case study</strong></td></tr>
+          <tr><td><a href="https://www.gov.uk/government/publications/measles-epidemiology-2023-to-2026">UKHSA measles epidemiology, 2023 to 2026</a></td><td>Measles cases by month, age, region and upper tier local authority (UTLA)</td><td>Counts for UTLAs with fewer than 10 cases are suppressed; the latest 4 weeks are likely underestimated</td></tr>
+          <tr><td><a href="https://www.gov.uk/government/statistics/cover-of-vaccination-evaluated-rapidly-cover-programme-april-2025-to-march-2026">UKHSA COVER, April 2025 to March 2026</a></td><td>Childhood vaccine coverage at 1, 2 and 5 years, by UK country, region and UTLA (<code>.ods</code>)</td><td>Read the Cover and Notes sheets first; complex tables</td></tr>
+          <tr><td><a href="https://www.ons.gov.uk/peoplepopulationandcommunity/healthandsocialcare">Office for National Statistics (ONS)</a></td><td>Population, deaths, health and inequalities; Excel or CSV</td><td>Many tables cover England and Wales only, not the UK</td></tr>
+          <tr><td><a href="https://digital.nhs.uk/">NHS England Digital</a></td><td>Hospital activity, prescribing, waiting times and other NHS statistics for England</td><td>NHS Digital became part of NHS England in 2023 (<a href="https://gov.uk/government/organisations/nhs-digital">GOV.UK</a>), so older links may point elsewhere</td></tr>
+          <tr><td><a href="https://publichealthscotland.scot/publications">Public Health Scotland</a></td><td>Scottish statistics, including weekly measles data and childhood immunisation</td><td>Scottish geographies (NHS Boards) differ from English ones</td></tr>
+          <tr><td><a href="https://phw.nhs.wales/data">Public Health Wales</a></td><td>Welsh surveillance dashboards and COVER uptake reports</td><td>Some data are dashboards only; check for a download</td></tr>
+          <tr><td><a href="https://www.health-ni.gov.uk/topics/doh-statistics-and-research">Department of Health (Northern Ireland)</a></td><td>Northern Ireland hospital, survey and inequalities statistics</td><td>Check which years each table covers</td></tr>
+          <tr><th scope="row" colspan="3">Global and international</th></tr>
+          <tr><td><a href="https://www.who.int/data/gho">WHO Global Health Observatory</a></td><td>Health statistics for the 194 WHO Member States</td><td>WHO is moving data to <a href="https://data.who.int/">data.who.int</a>; some pages may move</td></tr>
+          <tr><td><a href="https://immunizationdata.who.int/global">WHO Immunization data portal</a></td><td>Reported cases and incidence of vaccine-preventable diseases, including measles</td><td>Annual figures are official; monthly figures are provisional</td></tr>
+          <tr><td><a href="https://measles-rubella-monthly.ecdc.europa.eu/">ECDC measles and rubella monthly report</a></td><td>Monthly measles cases for EU/EEA countries</td><td>EU/EEA only; numbers can change afterwards</td></tr>
+          <tr><td><a href="https://ec.europa.eu/eurostat/web/health/information-data">Eurostat health</a></td><td>Comparable EU health statistics: health status, determinants, care resources, causes of death</td><td>Definitions can differ from UK ones</td></tr>
+          <tr><td><a href="https://vizhub.healthdata.org/gbd-results/">IHME GBD Results</a></td><td>Modelled burden-of-disease estimates for every country; CSV download (<a href="https://healthdata.org/data-visualization/gbd-results">IHME</a>)</td><td>Estimates, not counts; non-commercial licence (<a href="https://ghdx.healthdata.org/gbd-2021">GHDx</a>)</td></tr>
+          <tr><td><a href="https://wonder.cdc.gov/">CDC WONDER</a></td><td>US births, deaths, cancer and other public health data</td><td>A 2026 study reported unexplained pauses in many CDC datasets (<a href="https://www.the-scientist.com/nearly-half-of-once-frequently-updated-cdc-databases-are-now-outdated-73972">The Scientist</a>); check the last update</td></tr>
+          <tr><td><a href="https://ukdataservice.ac.uk/">UK Data Service</a></td><td>Large UK surveys and census data</td><td>Most datasets need free registration and an End User Licence (<a href="https://blogs.cranfield.ac.uk/library/ukds/">Cranfield</a>)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Search the literature: two routes</h3>
+    <p>Both routes are allowed. The marks come from explaining <strong>what you did and why</strong>, not from which route you chose.</p>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Literature search on your own or AI-assisted</caption>
+        <thead><tr><th scope="col">Route</th><th scope="col">What you do</th><th scope="col">What you write in your report</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">On your own</th><td>Search <a href="https://pubmed.ncbi.nlm.nih.gov/">PubMed</a> with MeSH terms and filters (<a href="https://pubmed.ncbi.nlm.nih.gov/help/">PubMed User Guide</a>). Find terms in the <a href="https://www.ncbi.nlm.nih.gov/mesh">MeSH database</a>.</td><td>Your search string, filters, date, number of results and why you kept each paper</td></tr>
+          <tr><th scope="row">AI-assisted</th><td>Ask Copilot to help you <strong>build</strong> a search string (prompt below), then run it in PubMed yourself</td><td>The same, plus the prompt and what you changed in Copilot's suggestion</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Example: using the MeSH database</h4>
+    <p>MeSH (Medical Subject Headings) is the controlled vocabulary used to index PubMed. One MeSH term collects papers that use different wording for the same idea.</p>
+    <ol class="steps">
+      <li>Go to the <a href="https://www.ncbi.nlm.nih.gov/mesh">MeSH database</a> and type <code>immunization coverage</code>.</li>
+      <li>It leads to the MeSH term <strong>Vaccination Coverage</strong>, defined as the rate of vaccination by geography or demography. Its entry terms include “Immunization Coverage” (<a href="https://profiles.viictr.org/profile/27545359">MeSH record</a>).</li>
+      <li>Add it to the PubMed search builder, or type <code>"Vaccination Coverage"[mh]</code> in PubMed. Papers indexed with this term are found whichever wording the authors used.</li>
+    </ol>
+
+    <h4>Example: Boolean operators in PubMed</h4>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Boolean operators and symbols in PubMed with examples</caption>
+        <thead><tr><th scope="col">Operator or symbol</th><th scope="col">What it does</th><th scope="col">Example</th></tr></thead>
+        <tbody>
+          <tr><td><code>AND</code></td><td>Both terms must appear: fewer, more relevant results</td><td><code>measles AND outbreak</code></td></tr>
+          <tr><td><code>OR</code></td><td>Either term: more results; use for synonyms</td><td><code>vaccination OR immunisation</code></td></tr>
+          <tr><td><code>NOT</code></td><td>Excludes a term; use with care</td><td><code>measles NOT rubella</code></td></tr>
+          <tr><td><code>( )</code></td><td>Groups terms so they are combined in the right order</td><td><code>measles AND (Birmingham OR London)</code></td></tr>
+          <tr><td><code>" "</code></td><td>Searches an exact phrase</td><td><code>"vaccine uptake"</code></td></tr>
+          <tr><td><code>*</code></td><td>Finds all word endings</td><td><code>inequalit*</code> finds inequality and inequalities</td></tr>
+          <tr><td><code>[mh]</code>, <code>[tiab]</code></td><td>Search only MeSH terms, or only titles and abstracts</td><td><code>measles[mh]</code>, <code>outbreak[tiab]</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Put together, a search for the case study paper could be: <code>(measles[mh] OR measles[tiab]) AND outbreak[tiab] AND (Birmingham[tiab] OR England[tiab])</code>, filtered to 2023–2025. See the <a href="https://pubmed.ncbi.nlm.nih.gov/help/">PubMed User Guide</a> for details.</p>
+
+    <div class="prompt">
+      <div class="prompt-head"><span>Example prompt (P-T-C-F-A + Accessibility)</span><button class="copy" type="button">Copy</button></div>
+<pre>PERSONA: You are a health sciences librarian who teaches literature searching.
+TASK: Help me build a PubMed search for my research question. Do not search for, list or summarise any papers.
+CONTEXT: My research question is: <span class="ph">[your research question]</span>. My own first search was: <span class="ph">[your own search string]</span>.
+FORMAT:
+1. A table: concept | MeSH term | free-text synonyms.
+2. One search string using AND, OR and brackets.
+3. Two PubMed filters worth considering, and why.
+ACCURACY: Only suggest MeSH terms you are confident exist, and remind me to check each one in the MeSH database. Do not give any references, paper titles or author names.
+ACCESSIBILITY: Plain English; explain every symbol you use ([mh], [tiab], *, quotation marks) in words.</pre>
+    </div>
+
+    <h4>Think it through</h4>
+    <ol class="questions">
+      <li>Did every suggested MeSH term exist when you checked it in the MeSH database?</li>
+      <li>Compare your own search with the suggested one: what did Copilot add, and what did it miss?</li>
+      <li>Did this route actually add to your searching skills, or would you have got there faster on your own?</li>
+    </ol>
+
+    <div class="drop-card amber">
+      <details class="drop">
+        <summary><h3>Critical thinking point: asking a chatbot for references</h3></summary>
+      <p style="margin-top:0">Chatbots can produce references that look real but don't exist. In one study, 18% of the citations GPT-4 produced for short literature reviews were fabricated, and 24% of the real ones had substantive errors (<a href="https://doi.org/10.1038/s41598-023-41032-5">Walters &amp; Wilder, 2023</a>). That is why the prompt above asks for a search string, not a reading list.</p>
+      <ol class="questions">
+        <li>If Copilot names a paper, can you find it in PubMed with the same title, authors, journal and year?</li>
+        <li>Does the paper say what Copilot said it says? Read the abstract yourself.</li>
+        <li>How would you report a reference you could not verify? (You leave it out.)</li>
+      </ol>
+      </details>
+    </div>
+
+    <div class="box">
+      <h3 style="margin-top:0">What your research question and search log should look like</h3>
+      <p>Your <strong>research question</strong> is one or two sentences, in your own words. For the case study:</p>
+      <p><em>“How have measles cases in England changed since 2012, which regions have been most affected, and who was most affected in a large recent outbreak?”</em></p>
+      <p>Your <strong>search log</strong> has one row per search. The rows you kept become your <strong>source list</strong>:</p>
+      <div class="table-wrap">
+        <table>
+          <caption class="vh">Example search log for the measles case study</caption>
+          <thead><tr><th scope="col">Date</th><th scope="col">Where</th><th scope="col">Search or route</th><th scope="col">Filters</th><th scope="col">Results</th><th scope="col">Kept, and why</th><th scope="col">Not available</th></tr></thead>
+          <tbody>
+            <tr><td>18/11/2026</td><td>PubMed</td><td><code>(measles[mh] OR measles[tiab]) AND outbreak[tiab] AND (Birmingham[tiab] OR England[tiab])</code></td><td>2023–2025</td><td><span class="ph">[number]</span></td><td>Jary et al. 2025: peer-reviewed, open access, UK outbreak with sociodemographic data</td><td><span class="ph">[any paper you could only read the abstract of]</span></td></tr>
+            <tr><td>18/11/2026</td><td>GOV.UK</td><td>Searched GOV.UK for “measles confirmed cases”</td><td>–</td><td>1 dataset</td><td>Historic confirmed cases by region, 2012–2025: official, yearly, small</td><td>–</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Copy both into your lab log.</strong> This is where you use them later:</p>
+      <div class="table-wrap">
+        <table>
+          <caption class="vh">Where the research question and source list are used later</caption>
+          <thead><tr><th scope="col">Task</th><th scope="col">What you use</th></tr></thead>
+          <tbody>
+            <tr><th scope="row" style="white-space:nowrap">Task 2</th><td>Your research question, pasted where it says <span class="ph">[paste your research question from Task 1]</span>.</td></tr>
+            <tr><th scope="row" style="white-space:nowrap">Task 3</th><td>Your research question, to decide which rows and columns you need to clean.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="drop-card amber">
+      <details class="drop">
+        <summary><h3>Using your own research platform, e.g. Gemini Notebook</h3></summary>
+      <p style="margin-top:0">The brief lets you use any research platform. If you choose Google's notebook tool, know this first:</p>
+      <ul>
+        <li><strong>Licence:</strong> it is not licensed by the University. UofG Copilot is the only AI service approved for University data (<a href="https://www.gla.ac.uk/myglasgow/it/365/copilot/guidance">UofG IT</a>).</li>
+        <li><strong>Account:</strong> you need a free personal Google account, and you may be asked to verify your age (<a href="https://support.google.com/gemininotebook/answer/16164461">Google Help</a>). Your UofG login will not work.</li>
+        <li><strong>Accuracy:</strong> Google's own help page says Gemini Notebook can make mistakes (<a href="https://support.google.com/gemininotebook/answer/16164461">Google Help</a>). Answers grounded in your sources still need checking against those sources.</li>
+      </ul>
+      <p style="margin-bottom:0">The same rules apply as for Copilot: read and think first, use the tool to check or challenge, and disclose how you used it.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ================= TASK 2 ================= -->
+  <section id="t2" class="task" aria-labelledby="t2-h">
+    <h2 id="t2-h">Task 2 · Read with Copilot: assistant, not reader</h2>
+    <p class="goal">Read the paper's abstract yourself, then use Copilot to pull out its findings, limitations and gaps. Check them against the paper, and check the paper against your dataset.</p>
+
+    <ol class="steps">
+      <li><strong>Read the abstract of Jary et al. (2025) yourself.</strong> Write two sentences in your lab log, in your own words. These are your <em>own notes</em>.</li>
+      <li><strong>Download the PDF.</strong> It is open access under CC BY 4.0 (<a href="https://www.eurosurveillance.org/content/10.2807/1560-7917.ES.2025.30.16.2400652">Eurosurveillance</a>), so you may upload it.</li>
+      <li>Open a <strong>fresh chat</strong>, upload the PDF (paperclip / “+” icon) and run the prompt below.</li>
+      <li><strong>Verify three claims</strong> against the paper, and record what you found.</li>
+      <li><strong>Cross-check with your dataset.</strong> Birmingham is in the West Midlands. Does the outbreak show up in the West Midlands figures for 2023 and 2024?</li>
+    </ol>
+
+    <div class="callout info">
+      <strong class="label">Why read the abstract first?</strong>
+      A fluent summary can feel like understanding and hide the gaps you would have noticed yourself. Your own notes are what you measure Copilot against.
+    </div>
+
+    <div class="callout info">
+      <strong class="label">How to use this prompt</strong>
+      Replace <span class="ph">[paste your research question from Task 1]</span> with the question in your lab log, and <span class="ph">[paste your own notes]</span> with the two sentences you wrote in step 1.
+    </div>
+
+    <div class="prompt">
+      <div class="prompt-head"><span>Example prompt (P-T-C-F-A + Accessibility)</span><button class="copy" type="button">Copy</button></div>
+<pre>PERSONA: You are a careful research assistant for a government policy team.
+TASK: Using only the attached paper, summarise its key findings and limitations for a policy brief.
+CONTEXT: My research question is: <span class="ph">[paste your research question from Task 1]</span>. The paper is <span class="ph">[Jary et al. 2025, Eurosurveillance, on the 2023–2024 measles outbreak in Birmingham]</span>. I have already read the abstract; my own notes are below.
+FORMAT:
+1. A table: finding | number, with its denominator | section of the paper.
+2. The limitations the authors state, with the section.
+3. Three questions this paper cannot answer.
+4. Anything in the paper that contradicts my notes.
+ACCURACY: Use only the attached paper. If something is not in it, write "not in the paper" instead of using outside knowledge. Give the section for every claim. Copy numbers exactly as written. No quotation longer than one sentence.
+ACCESSIBILITY: Plain English; define terms such as "deprivation quintile" on first use; give the table as real text.
+
+My own notes:
+<span class="ph">[paste your own notes]</span></pre>
+    </div>
+
+    <div class="box">
+      <h3 style="margin-top:0">What a checked claim should look like</h3>
+      <div class="table-wrap">
+        <table>
+          <caption class="vh">Example of checking a Copilot claim against the paper</caption>
+          <thead><tr><th scope="col">Claim</th><th scope="col">Copilot said</th><th scope="col">The paper says</th><th scope="col">Verdict</th></tr></thead>
+          <tbody>
+            <tr><td>Vaccination status of cases</td><td><span class="ph">[Copilot's wording]</span></td><td>89% (362/406) were unvaccinated (Abstract)</td><td><span class="ph">[matches / wrong / caveat missing]</span></td></tr>
+            <tr><td>Deprivation</td><td><span class="ph">[Copilot's wording]</span></td><td>78% (315/406) lived in the most deprived quintile (Abstract)</td><td><span class="ph">[matches / wrong / caveat missing]</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-bottom:0">The paper's figures are from <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12023730/">Jary et al. (2025)</a>. Use the same layout for your own three checks, and put the table in your Research section.</p>
+    </div>
+
+    <h4>Think it through</h4>
+    <ol class="questions">
+      <li>For your three checked claims: did the paper say exactly that, with the same caveats and denominators?</li>
+      <li>Did Copilot add anything that is not in the paper?</li>
+      <li>What did it point out that your own notes missed, and what did your notes have that it missed?</li>
+      <li>Are its “questions this paper cannot answer” real gaps? Do they belong under <em>Key uncertainties</em> or <em>Note any important sources not available</em> in your pack?</li>
+      <li>The outbreak ran from October 2023 to April 2024, but the dataset counts cases by calendar year. How does that affect your cross-check in step 5?</li>
+    </ol>
+  </section>
+
+  <!-- ================= TASK 3 ================= -->
+  <section id="t3" class="task" aria-labelledby="t3-h">
+    <h2 id="t3-h">Task 3 · Clean the data and keep a change log</h2>
+    <p class="goal">Turn a small published table into a clean table in the Analysis Workbook, and log every change so someone else could repeat it. You find the problems and make the decisions; Copilot only explains options.</p>
+
+    <h3>Part A: record the source</h3>
+    <ol class="steps">
+      <li>On the <a href="https://www.gov.uk/government/publications/measles-historic-confirmed-cases-notifications-and-deaths/measles-historic-confirmed-cases-notifications-and-deaths">UKHSA page</a>, select the table <strong>Confirmed cases of measles by region: 2012 to 2025</strong>, copy it, and paste it into <strong>Raw Data</strong> from cell A4, unchanged.</li>
+      <li>Fill in <strong>Source Info</strong>. Four rows are filled in below as an example.</li>
+    </ol>
+
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Example Source Info entries for the measles region table</caption>
+        <thead><tr><th scope="col">Field</th><th scope="col">Example</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Dataset title</th><td>Measles: historic confirmed cases, notifications and deaths. Table: Confirmed cases of measles by region, 2012 to 2025</td></tr>
+          <tr><th scope="row">Edition</th><td>Page updated 6 October 2026</td></tr>
+          <tr><th scope="row">Licence</th><td>Open Government Licence v3.0</td></tr>
+          <tr><th scope="row">Coverage</th><td>England only; 9 regions; calendar years 2012 to 2025</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Part B: clean in Excel and log each step</h3>
+    <p>Start from the example below: it shows what needs cleaning in this table, and how each change is logged.</p>
+    <div class="box">
+      <h3 style="margin-top:0">What your Cleaning Log and Data Dictionary should look like</h3>
+      <p>When pasted, the table has a header row in row X of Raw Data, followed by # region rows and a Total row, with one column per year and a Total column. Four example log rows:</p>
+      <div class="table-wrap">
+        <table>
+          <caption class="vh">Example Cleaning Log rows for the measles region table</caption>
+          <thead><tr><th scope="col">Step</th><th scope="col">Problem found</th><th scope="col">What I did</th><th scope="col">Why (my decision)</th><th scope="col">Excel tool or formula</th><th scope="col">How GenAI helped (Prompt Log #)</th><th scope="col">How I checked it</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>A Total row below the regions</td><td>Left it out of Clean Data; kept it on Raw Data for checking</td><td>Adding it to the regions would count every case twice</td><td><code>=SUM()</code> of the regions per year</td><td>None</td><td>My sums match the publisher's Total row for every year</td></tr>
+            <tr><td>2</td><td>A Total column for 2012 to 2025</td><td>Left it out</td><td>I calculate my own totals in the Analysis sheet</td><td>–</td><td>None</td><td>My region totals match Raw Data</td></tr>
+            <tr><td>3</td><td>Years spread across columns</td><td>Turned them into rows: Region, Year, Cases</td><td>One row per observation, so I can filter, pivot and chart by year</td><td>Power Query: Unpivot Other Columns</td><td>Copilot explained wide and long layouts (#4)</td><td>Rows = # regions × # years</td></tr>
+            <tr><td>4</td><td>Counts formatted differently (e.g. <code>1305</code> and <code>1,652</code>)</td><td>Made sure every count is a number</td><td>Text cannot be summed or charted</td><td><code>=ISNUMBER()</code>; <code>=VALUE()</code> where needed</td><td>None</td><td><code>COUNT</code> = <code>COUNTA</code> for Cases</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Three example Data Dictionary rows:</p>
+      <div class="table-wrap">
+        <table>
+          <caption class="vh">Example Data Dictionary rows for the measles region table</caption>
+          <thead><tr><th scope="col">Variable</th><th scope="col">Plain-English meaning</th><th scope="col">Units</th><th scope="col">Values or range</th><th scope="col">Derived?</th><th scope="col">Source of definition</th></tr></thead>
+          <tbody>
+            <tr><td><code>Region</code></td><td>English region where the case was reported</td><td>–</td><td>9 regions, e.g. London, West Midlands</td><td>No</td><td>UKHSA page</td></tr>
+            <tr><td><code>Year</code></td><td>Calendar year</td><td>Year</td><td>2012 to 2025</td><td>Yes (step 3, from column headers)</td><td>UKHSA page</td></tr>
+            <tr><td><code>Cases</code></td><td>Measles cases confirmed by laboratory testing</td><td>Count of people</td><td>Whole numbers, 0 or more</td><td>No</td><td><a href="https://ukhsa-dashboard.data.gov.uk/topics/measles">UKHSA dashboard</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    
+    <ol class="steps" style="counter-reset:s 2">
+      <li><strong>Make your decisions.</strong> Use the example above as a guide, and check whether your table has any other problems. Write <em>why</em> for each decision.</li>
+      <li><strong>Clean on Clean Data</strong>: one header row in row 4, one row per observation (region and year), and counts stored as numbers. To turn the year columns into rows, use Power Query's <em>Unpivot Other Columns</em> (<a href="https://support.microsoft.com/en-us/excel/unpivot-columns-power-query">Microsoft</a>). Then <em>Home → Format as Table</em>.</li>
+      <li><strong>Log every change</strong> in the Cleaning Log, in the order you made it. Add the <em>Data quality concerns</em> at the bottom.</li>
+      <li><strong>Fill in the Data Dictionary</strong> for each variable you will use.</li>
+    </ol>
+
+    <h4>Check it</h4>
+    <ul class="check">
+      <li><label><input type="checkbox"> <span>Raw Data is unchanged; every change is on Clean Data.</span></label></li>
+      <li><label><input type="checkbox"> <span>There is one header row, and no merged cells.</span></label></li>
+      <li><label><input type="checkbox"> <span>The Cases column contains only numbers: <code>COUNT</code> equals <code>COUNTA</code>.</span></label></li>
+      <li><label><input type="checkbox"> <span>No total rows are left in Clean Data.</span></label></li>
+      <li><label><input type="checkbox"> <span>Three values on Clean Data match Raw Data exactly.</span></label></li>
+      <li><label><input type="checkbox"> <span>Every Cleaning Log row says why, and how I checked it.</span></label></li>
+    </ul>
+
+    <div class="callout a11y">
+      <strong class="label">Accessibility</strong>
+      Formatting Clean Data as a table gives it one clear header row that screen readers can announce. Give the table a meaningful name (<em>Table Design → Table Name</em>), and never show a problem value by colour alone: add a note in the Cleaning Log instead.
+    </div>
+
+    <div class="drop-card amber">
+      <details class="drop">
+        <summary><h3>Critical thinking point: which number is right?</h3></summary>
+      <p style="margin-top:0">This table gives 958 confirmed cases in England for 2025. UKHSA's 2026 epidemiology page gives 959 for 2025, and says its figures are provisional and subject to change (<a href="https://www.gov.uk/government/publications/measles-epidemiology-2023-to-2026/confirmed-cases-of-measles-in-england-by-month-age-region-and-upper-tier-local-authority-2026">UKHSA</a>). The same historic page also reports 6,294 <em>notifications</em> of measles for 2025. Notified cases are offered testing to confirm the diagnosis, so notifications are not the same as confirmed cases, and the page says notifications for 2021 to 2025 are a provisional estimate because of a data collection issue.</p>
+      <ol class="questions">
+        <li>Which 2025 figure would you report, and how would you note the difference in your Cleaning Log's <em>Data quality concerns</em>?</li>
+        <li>Ask Copilot: <em>“What is the difference between measles notifications and confirmed cases?”</em> Then check its answer against the UKHSA page. Which measure fits your research question?</li>
+        <li>London has many more cases than the North East. Is that only because more people live there? What would you need from ONS to compare regions fairly?</li>
+      </ol>
+      </details>
+    </div>
+
+    <div class="callout info">
+      <strong class="label">Next: analysis and charts</strong>
+      Once your Clean Data is ready, follow Session 3 for the <em>Analysis</em> and <em>Chart</em> sheets: you calculate in Excel, you build every chart, and Copilot explains and checks. <strong>You don't need to make the exact same charts we did in Session 3.</strong> Think, and use the AI to help you decide what kind of graphs would be best suited for your case, then interpret them yourself.
+    </div>
+  </section>
+
+  <!-- ================= EVALUATE ================= -->
+  <section id="evaluate" aria-labelledby="eval-h">
+    <h2 id="eval-h">Evaluate your outputs</h2>
+    <p>You can use these five questions to ensure that you are generating an adequate output.</p>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Evaluation criteria</caption>
+        <thead><tr><th scope="col">Criterion</th><th scope="col">Ask yourself</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Accuracy</th><td>Does every reference exist, and does every claim match its source?</td></tr>
+          <tr><th scope="row">Traceability</th><td>Could someone repeat your searches and your cleaning from your logs alone?</td></tr>
+          <tr><th scope="row">Value added</th><td>Where did GenAI add to your skills, and where did you do better on your own?</td></tr>
+          <tr><th scope="row">Accessibility</th><td>Plain-English logs, one header row, no merged cells, no meaning by colour alone?</td></tr>
+          <tr><th scope="row">Transparency</th><td>Are every tool, every prompt (numbered) and every data source and licence disclosed?</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= LOG ================= -->
+  <section id="log" aria-labelledby="log-h">
+    <h2 id="log-h">Your lab log</h2>
+    <p><span class="hl">The lab log is only a suggestion to help you keep track of your work: we will not check it at the end of the session.</span> It doesn't need to be polished, and bullet points are fine. It will make your Research section, workbook and appendix much quicker to write.</p>
+    <div class="table-wrap">
+      <table>
+        <caption class="vh">Lab log template</caption>
+        <thead><tr><th scope="col">Field</th><th scope="col">What to write</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Research question</th><td>Your own words (Task 1).</td></tr>
+          <tr><th scope="row">Search log and source list</th><td>One row per search; the sources you kept, and why (Task 1).</td></tr>
+          <tr><th scope="row">Prompt log</th><td>Every prompt, numbered and copied exactly. Use the number in the workbook's <em>Prompt Log #</em> column.</td></tr>
+          <tr><th scope="row">Own notes</th><td>Your two-sentence summaries, written before using Copilot (Task 2).</td></tr>
+          <tr><th scope="row">Checks</th><td>Which claims and rows you checked, and what you found.</td></tr>
+          <tr><th scope="row">Problems spotted</th><td>Invented references, wrong attributions, missed caveats, cleaning options that would distort the data.</td></tr>
+          <tr><th scope="row">Ethics notes</th><td>What you uploaded and whether you were allowed to, for the ethics lecture.</td></tr>
+          <tr><th scope="row">Verdict</th><td>For each task: did GenAI add to your skills? Would you use it again for this?</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= SUMMARY ================= -->
+  <section id="responsible" aria-labelledby="resp-h">
+    <h2 id="resp-h">Summary</h2>
+    <div class="grid2">
+      <div class="card"><h3 style="margin-top:0">Disclose</h3><p>Name every tool and say what it did, e.g. <em>“PubMed search string drafted with Microsoft Copilot, then checked and edited by [name].”</em></p></div>
+      <div class="card"><h3 style="margin-top:0">Protect</h3><p>Use your UofG login. If you choose another platform, use it knowingly. Never upload personal, unpublished or restricted material.</p></div>
+      <div class="card"><h3 style="margin-top:0">Credit</h3><p>Cite each dataset with its publisher, edition, URL, access date and licence, as in the Source Info sheet.</p></div>
+      <div class="card"><h3 style="margin-top:0">Verify</h3><p>Every reference is found in a database; every claim matches its source; every cleaning step is logged and checked.</p></div>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  Assessment-focused extra session · University of Glasgow · <a href="GenAI_Data_Analysis_Booklet.html">Back to Session 3: GenAI for Data Analysis</a>
+</footer>
+
+<script>
+// Copy buttons: copy the prompt text (placeholders included, as plain text)
+document.querySelectorAll('.prompt').forEach(function(box){
+  var btn = box.querySelector('.copy');
+  var pre = box.querySelector('pre');
+  if(!btn || !pre) return;
+  btn.setAttribute('aria-label','Copy prompt to clipboard');
+  btn.addEventListener('click', function(){
+    var text = pre.innerText;
+    var done = function(){ btn.textContent = 'Copied ✓'; setTimeout(function(){ btn.textContent = 'Copy'; }, 1800); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(function(){ fallback(text); done(); });
+    } else { fallback(text); done(); }
+  });
+});
+function fallback(text){
+  var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly','');
+  ta.style.position='absolute'; ta.style.left='-9999px'; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta);
+}
+
+// Remember checkboxes per viewer (best-effort only)
+var boxes = document.querySelectorAll('.check input[type=checkbox]');
+var KEY = 'biol5439-extra-checks';
+var saved = {};
+try{ saved = JSON.parse(localStorage.getItem(KEY) || '{}'); }catch(e){ saved = {}; }
+boxes.forEach(function(cb, i){
+  if(saved[i]) cb.checked = true;
+  cb.addEventListener('change', function(){
+    saved[i] = cb.checked;
+    try{ localStorage.setItem(KEY, JSON.stringify(saved)); }catch(e){}
+  });
+});
+
+// Theme toggle
+var tbtn = document.getElementById('themeToggle');
+try{ var t = localStorage.getItem('biol5439-theme'); if(t) document.documentElement.setAttribute('data-theme', t); }catch(e){}
+tbtn.addEventListener('click', function(){
+  var cur = document.documentElement.getAttribute('data-theme');
+  var dark = cur ? cur === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var next = dark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try{ localStorage.setItem('biol5439-theme', next); }catch(e){}
+});
+
+// Print: open all details
+window.addEventListener('beforeprint', function(){ document.querySelectorAll('details').forEach(function(d){ d.open = true; }); });
+</script>
+</body>
+</html>
